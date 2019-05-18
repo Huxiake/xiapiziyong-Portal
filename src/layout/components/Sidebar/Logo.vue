@@ -24,8 +24,8 @@ export default {
   },
   data() {
     return {
-      title: 'Vue Admin Template',
-      logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
+      title: 'Warehouse',
+      logo: '/static/img/ERP-logo.b13c3359.png'
     }
   }
 }
@@ -55,7 +55,7 @@ export default {
     width: 100%;
 
     & .sidebar-logo {
-      width: 32px;
+      width: 40.95px;
       height: 32px;
       vertical-align: middle;
       margin-right: 12px;

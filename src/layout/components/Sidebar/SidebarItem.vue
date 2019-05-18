@@ -93,3 +93,10 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+  .el-submenu__icon-arrow {
+    right: 50px;
+  }
+</style>
+

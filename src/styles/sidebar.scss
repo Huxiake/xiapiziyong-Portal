@@ -88,11 +88,11 @@
 
   .hideSidebar {
     .sidebar-container {
-      width: 54px !important;
+      width: 59.6px !important;
     }
 
     .main-container {
-      margin-left: 54px;
+      margin-left: 59.6px;
     }
 
     .submenu-title-noDropdown {
@@ -119,6 +119,7 @@
         }
 
         .el-submenu__icon-arrow {
+          right: 50px;
           display: none;
         }
       }
