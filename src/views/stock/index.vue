@@ -6,7 +6,7 @@
       </div>
       <div class="box-tools">
         <el-row :gutter="16" type="flex" justify="right">
-          <el-col :span="16">
+          <el-col :span="17">
             <el-button type="primary" @click="handleNew">添加款式</el-button>
           </el-col>
           <el-col :span="3">
@@ -31,7 +31,7 @@
               />
             </el-select>
           </el-col>
-          <el-col :span="2">
+          <el-col :span="1.5">
             <el-button type="primary" @click="handleGetPaper">查询</el-button>
           </el-col>
         </el-row>

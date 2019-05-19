@@ -1,78 +1,74 @@
 <template>
   <div class="app-container">
-    <el-input v-model="filterText" placeholder="Filter keyword" style="margin-bottom:30px;" />
-
-    <el-tree
-      ref="tree2"
-      :data="data2"
-      :props="defaultProps"
-      :filter-node-method="filterNode"
-      class="filter-tree"
-      default-expand-all
-    />
-
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span>拿货列表</span>
+      </div>
+      <div class="box-tools">
+        <el-row :gutter="16" type="flex" justify="right">
+          <el-col :span="20">
+            <el-button type="primary" @click="handleNew">打印</el-button>
+          </el-col>
+          <el-col :span="3">
+            <el-input
+              v-model="parmas.first"
+              placeholder="请输入款号"
+            />
+          </el-col>
+          <el-col :span="1.5">
+            <el-button type="primary" @click="handleGetPaper">查询</el-button>
+          </el-col>
+        </el-row>
+      </div>
+      <div class="box-table">
+        <el-table>
+          <el-table-column
+            label="缩略图"
+            align="center"
+          />
+          <el-table-column
+            label="标题"
+            align="center"
+          />
+          <el-table-column
+            label="款号"
+            align="center"
+          />
+          <el-table-column
+            label="拿货编号"
+            align="center"
+          />
+          <el-table-column
+            label="价格"
+            align="center"
+          />
+          <el-table-column
+            label="操作"
+            align="center"
+          />
+        </el-table>
+      </div>
+    </el-card>
   </div>
 </template>
 
 <script>
 export default {
-
   data() {
     return {
-      filterText: '',
-      data2: [{
-        id: 1,
-        label: 'Level one 1',
-        children: [{
-          id: 4,
-          label: 'Level two 1-1',
-          children: [{
-            id: 9,
-            label: 'Level three 1-1-1'
-          }, {
-            id: 10,
-            label: 'Level three 1-1-2'
-          }]
-        }]
-      }, {
-        id: 2,
-        label: 'Level one 2',
-        children: [{
-          id: 5,
-          label: 'Level two 2-1'
-        }, {
-          id: 6,
-          label: 'Level two 2-2'
-        }]
-      }, {
-        id: 3,
-        label: 'Level one 3',
-        children: [{
-          id: 7,
-          label: 'Level two 3-1'
-        }, {
-          id: 8,
-          label: 'Level two 3-2'
-        }]
-      }],
-      defaultProps: {
-        children: 'children',
-        label: 'label'
+      parmas: {
+        first: ''
       }
     }
   },
-  watch: {
-    filterText(val) {
-      this.$refs.tree2.filter(val)
-    }
-  },
-
   methods: {
-    filterNode(value, data) {
-      if (!value) return true
-      return data.label.indexOf(value) !== -1
-    }
   }
 }
 </script>
+
+<style lang="scss">
+  .box-card {
+    min-height: calc(100vh - 70px);
+  }
+</style>
 

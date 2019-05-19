@@ -7,12 +7,14 @@
       <div class="box-tools">
         <el-row :gutter="16" type="flex" justify="right">
           <el-col :span="17">
-            <el-button type="primary" @click="handleNew">导入订单</el-button>
+            <!-- <el-button type="primary" @click="handleNew">导入订单</el-button> -->
+            <!-- <el-button type="primary" @click="handleNew">配货</el-button>
+            <el-button type="primary" @click="handleNew">生成拿货单</el-button> -->
           </el-col>
           <el-col :span="3">
             <el-input
               v-model="parmas.first"
-              placeholder="请输入试卷名"
+              placeholder="请输入款号"
             />
           </el-col>
           <el-col :span="3">
@@ -35,8 +37,14 @@
             <el-button type="primary" @click="handleGetPaper">查询</el-button>
           </el-col>
         </el-row>
-        <el-row :gutter="0" type="flex" justify="right">
-          <el-button type="primary" @click="handleNew">配货</el-button>
+        <el-row style="margin-top:20px;margin-bottom:20px">
+          <el-col :span="22">
+            <el-button type="primary" @click="handleNew">配货</el-button>
+            <el-button type="primary" @click="handleNew">生成拿货单</el-button>
+          </el-col>
+          <el-col :span="2">
+            <el-button type="warning" style="float:right" @click="handleNew">导入订单</el-button>
+          </el-col>
         </el-row>
       </div>
       <div class="box-table">

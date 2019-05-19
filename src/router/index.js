@@ -32,7 +32,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       // component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '主页', icon: 'dashboard' }
     }]
   },
 
@@ -72,7 +72,7 @@ export const constantRoutes = [
       {
         path: 'list',
         name: 'list',
-        // component: () => import('@/views/table/index'),
+        component: () => import('@/views/get_goods/index'),
         meta: { title: '拿货列表', icon: 'liebiao' }
       },
       {
