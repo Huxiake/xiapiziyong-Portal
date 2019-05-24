@@ -84,6 +84,14 @@ export const constantRoutes = [
     ]
   },
 
+  {
+    path: '/downpage',
+    name: 'downpage',
+    hidden: true,
+    component: () => import('@/views/components/downpage'),
+    meta: { title: 'downPage', icon: 'fankui' }
+  },
+
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
