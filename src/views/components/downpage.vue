@@ -1,9 +1,11 @@
 <template>
   <div id="pdfDom" :style="{width: pdfWidth, height: pdfHeght}">
-    <div v-for="(item, index) in pagedata" :key="index" style="width:141.73px;height:85.04px">
-      {{ item.SectionNum }}
-      {{ item.GetGoodsNum }}
-      <div :id="'qrDom' + index" />
+    <div v-for="(item, index) in pagedata" :key="index" style="width:556.92px;height:340.16px">
+      <span style="font-size:35px">{{ item.SectionNum }}</span>
+      <div style="float:right">
+        <div :id="'qrDom' + index" />
+        <span style="font-size:35px">{{ item.GetGoodsNum }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -16,7 +18,7 @@ export default {
     return {
       htmlTitle: new Date(),
       pagedata: [],
-      pdfWidth: '141.73px',
+      pdfWidth: '556.92px',
       pdfHeght: null
     }
   },
@@ -31,11 +33,11 @@ export default {
   methods: {
     qrcode() {
       const dataLen = this.pagedata.length
-      this.pdfHeght = 85.04 * dataLen + 'px'
+      this.pdfHeght = 340.16 * dataLen + 'px'
       for (let i = 0; i < dataLen; i++) {
         new QRCode('qrDom' + i, {
-          width: 30,
-          height: 30,
+          width: 240,
+          height: 240,
           text: `{"section":${this.pagedata[i].SectionNum}, "shoppingcarduid": '245646'}`
         })
       }
