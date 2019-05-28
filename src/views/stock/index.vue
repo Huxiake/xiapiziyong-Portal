@@ -8,7 +8,7 @@
         <el-row :gutter="16" type="flex" justify="right">
           <el-col :span="20">
             <el-button type="primary">上传款式</el-button>
-            <el-button type="primary" @click="toPdf()">打印标签</el-button>
+            <el-button type="primary" @click="toPrint()">打印标签</el-button>
           </el-col>
           <el-col :span="3">
             <el-input
@@ -40,6 +40,7 @@
       <div class="box-table">
         <el-table
           :data="sotckData"
+          @row-click="toSectionDetails"
         >
           <el-table-column
             type="selection"
@@ -129,13 +130,20 @@ export default {
         }
       })
     },
-    toPdf() {
+    toPrint() {
       // this.getPdf()
       this.$router.push({
         name: 'downpage',
         params: {
           data: this.sotckData
         }
+      })
+    },
+    toSectionDetails(row, column, event) {
+      console.log('this')
+      this.$router.push({
+        name: 'stockDetails',
+        params: { id: row.Id }
       })
     }
   }

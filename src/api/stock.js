@@ -6,3 +6,10 @@ export function stockList(offset, limit) {
     method: 'get'
   })
 }
+
+export function stockDetails(id) {
+  return request({
+    url: '/stock/details/getSectionDetails?sectionId=' + id,
+    method: 'get'
+  })
+}

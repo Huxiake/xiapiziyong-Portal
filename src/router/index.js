@@ -45,6 +45,13 @@ export const constantRoutes = [
         name: 'stock',
         component: () => import('@/views/stock/index'),
         meta: { title: '库存管理', icon: 'kucun' }
+      },
+      {
+        path: 'details/:id',
+        name: 'stockDetails',
+        hidden: true,
+        component: () => import('@/views/stock/stockDetails'),
+        meta: { title: '库存详情', icon: 'kucun' }
       }
     ]
   },
