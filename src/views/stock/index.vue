@@ -6,8 +6,17 @@
       </div>
       <div class="box-tools">
         <el-row :gutter="16" type="flex" justify="right">
-          <el-col :span="20">
-            <el-button type="primary">上传款式</el-button>
+          <el-col :span="1.5">
+            <el-upload
+              action=""
+              :show-file-list="false"
+              :before-upload="beforeXlsUpload"
+              :http-request="uploadXlsFile"
+            >
+              <el-button type="primary">上传款式</el-button>
+            </el-upload>
+          </el-col>
+          <el-col :span="19">
             <el-button type="primary" @click="toPrint()">打印标签</el-button>
           </el-col>
           <el-col :span="3">
@@ -39,7 +48,7 @@
       </div>
       <div class="box-table">
         <el-table
-          :data="sotckData"
+          :data="stockData"
           @row-click="toSectionDetails"
         >
           <el-table-column
@@ -54,10 +63,10 @@
             <template slot-scope="scope">
               <el-popover
                 placement="right-start"
-                width="300"
+                width="326"
                 trigger="hover"
               >
-                <img :src="scope.row.Img + '?x-oss-process=image/resize,h_300'">
+                <img :src="scope.row.Img + '?x-oss-process=image/resize,h_300,limit_0'" style="margin:0 auto">
                 <img slot="reference" :src="scope.row.Img + '?x-oss-process=image/resize,h_58'">
               </el-popover>
             </template>
@@ -87,32 +96,88 @@
             align="center"
             prop="Remark"
           />
-          <el-table-column
+          <!-- <el-table-column
             label="状态"
             align="center"
             prop="Status"
-          />
+          /> -->
           <el-table-column
             label="操作"
             align="center"
-          />
+            width="150"
+          >
+            <template slot-scope="scope">
+              <a @click="handleSpuEdit(scope.row.Id)">编辑</a>
+              <a @click="handleSpuDelete(scope.row.Id)">删除</a>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
     </el-card>
+    <!-- 编辑spu的dialog -->
+    <el-dialog title="编辑款式" :visible.sync="dialogEditVisible">
+      <el-form :model="editSpuInfo" label-position="right" label-width="100px">
+        <el-form-item label="图片">
+          <el-upload
+            ref="spuImgUpload"
+            class="avatar-uploader"
+            action=""
+            :show-file-list="false"
+            :auto-upload="false"
+            :on-change="handleImgChange"
+            :http-request="uploadImgFile"
+          >
+            <img v-if="imageUrl_temp" :src="imageUrl_temp" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon" />
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="标题">
+          <el-input v-model="editSpuInfo.Name" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="款号">
+          <el-input v-model="editSpuInfo.SectionNum" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="拿货编号">
+          <el-input v-model="editSpuInfo.GetGoodsNum" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="价格">
+          <el-input v-model="editSpuInfo.Price" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="editSpuInfo.Remark" type="textarea" autocomplete="off" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogEditVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editSubmit">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { stockList } from '@/api/stock'
+import { stockList, uploadSpuXls, uploadSpuPic, uploadErpSpu, deleteErpSpu } from '@/api/stock'
+// import qs from 'qs'
 
 export default {
   data() {
     return {
-      htmlTitle: '123456',
+      dialogEditVisible: false,
       parmas: {
         first: ''
       },
-      sotckData: [],
+      imageUrl_temp: '',
+      editSpuInfo: {
+        Id:	'',
+        Status: '',
+        SectionNum: '',
+        Name: '',
+        Img: '',
+        GetGoodsNum: '',
+        Price: '',
+        Remark: ''
+      },
+      stockData: [],
       paginator: {
         offset: 0,
         limit: 20
@@ -126,7 +191,7 @@ export default {
     getStockList(offset, limit) {
       stockList(offset, limit).then(res => {
         if (res.success) {
-          this.sotckData = res.data.rows
+          this.stockData = res.data.rows
         }
       })
     },
@@ -140,10 +205,102 @@ export default {
       })
     },
     toSectionDetails(row, column, event) {
-      console.log('this')
-      this.$router.push({
-        name: 'stockDetails',
-        params: { id: row.Id }
+      console.log(event.target.innerHTML)
+      if (event.target.innerHTML !== '编辑' && event.target.innerHTML !== '删除') {
+        this.$router.push({
+          name: 'stockDetails',
+          params: { id: row.Id }
+        })
+      }
+    },
+    handleSpuEdit(id) {
+      const stockDataLen = this.stockData.length
+      for (let i = 0; i < stockDataLen; i++) {
+        if (this.stockData[i]['Id'] === id) {
+          this.editSpuInfo = JSON.parse(JSON.stringify(this.stockData[i]))
+          this.imageUrl_temp = this.editSpuInfo['Img']
+        }
+      }
+      this.dialogEditVisible = true
+    },
+    handleSpuDelete(id) {
+      this.$confirm('此操作将删除该案例, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteErpSpu(id).then(res => {
+          if (res.success) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getStockList()
+          }
+        })
+      })
+    },
+    beforeXlsUpload(file) {
+      const pattern = /^(\S)*.xlsx/
+      const isXlsx = pattern.test(file.name)
+
+      if (!isXlsx) {
+        this.$message.error('文件只能是 xlsx 格式')
+      }
+      return isXlsx
+    },
+    uploadXlsFile(item) {
+      const fileObj = item.file
+      // FormData 对象
+      const form = new FormData()
+      // 文件对象
+      form.append('file', fileObj)
+      uploadSpuXls(form).then(res => {
+        if (!res.success) {
+          this.$message.error('图片上传失败')
+        }
+      })
+    },
+    handleImgChange(file) {
+      console.log(file)
+      const isJPG = file.raw.type === 'image/jpeg'
+      const isLt200KB = file.raw.size < 204800
+
+      if (!isJPG) {
+        this.$message.error('图片只能是 JPG 格式')
+      }
+      if (!isLt200KB) {
+        this.$message.error('图片大小不能超过 200KB')
+      }
+      if (isJPG && isLt200KB) {
+        this.imageUrl_temp = URL.createObjectURL(file.raw)
+      }
+    },
+    uploadImgFile(item) {
+      const fileObj = item.file
+      // FormData 对象
+      const form = new FormData()
+      // 文件对象
+      form.append('img', fileObj)
+      form.append('size', fileObj.size)
+      form.append('sectionNum', this.editSpuInfo.SectionNum)
+      uploadSpuPic(form).then(res => {
+        if (!res.success) {
+          this.$message.error('图片上传失败')
+        }
+      })
+    },
+    editSubmit() { // 提交修改
+      this.dialogEditVisible = false
+      this.editSpuInfo.Img = 'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/' + this.editSpuInfo.SectionNum + '.jpg'
+      uploadErpSpu(this.editSpuInfo).then(res => {
+        if (res.success) {
+          this.$refs.spuImgUpload.submit()
+          this.getStockList()
+          this.editSpuInfo = {}
+        } else {
+          this.$message.error('修改失败，请稍后重试')
+        }
       })
     }
   }
@@ -153,6 +310,32 @@ export default {
 <style lang="scss">
   .box-card {
     min-height: calc(100vh - 70px);
+    & a {
+      color: #409eff;
+    }
+  }
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
   }
 </style>
 
