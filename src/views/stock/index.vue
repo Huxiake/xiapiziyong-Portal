@@ -50,16 +50,10 @@
         <el-table
           :data="stockData"
           @row-click="toSectionDetails"
+          @selection-change="handleSelectionChange"
         >
-          <el-table-column
-            type="selection"
-            width="55"
-          />
-          <el-table-column
-            label="缩略图"
-            align="center"
-            width="80"
-          >
+          <el-table-column type="selection" width="55" />
+          <el-table-column label="缩略图" align="center" width="80">
             <template slot-scope="scope">
               <el-popover
                 placement="right-start"
@@ -71,41 +65,17 @@
               </el-popover>
             </template>
           </el-table-column>
-          <el-table-column
-            label="标题"
-            align="center"
-            prop="Name"
-          />
-          <el-table-column
-            label="款号"
-            align="center"
-            prop="SectionNum"
-          />
-          <el-table-column
-            label="拿货编号"
-            align="center"
-            prop="GetGoodsNum"
-          />
-          <el-table-column
-            label="价格"
-            align="center"
-            prop="Price"
-          />
-          <el-table-column
-            label="备注"
-            align="center"
-            prop="Remark"
-          />
+          <el-table-column label="标题" align="center" prop="Name" />
+          <el-table-column label="款号" align="center" prop="SectionNum" />
+          <el-table-column label="拿货编号" align="center" prop="GetGoodsNum" />
+          <el-table-column label="价格" align="center" prop="Price" />
+          <el-table-column label="备注" align="center" prop="Remark" />
           <!-- <el-table-column
             label="状态"
             align="center"
             prop="Status"
           /> -->
-          <el-table-column
-            label="操作"
-            align="center"
-            width="150"
-          >
+          <el-table-column label="操作" align="center" width="150">
             <template slot-scope="scope">
               <a @click="handleSpuEdit(scope.row.Id)">编辑</a>
               <a @click="handleSpuDelete(scope.row.Id)">删除</a>
@@ -181,7 +151,8 @@ export default {
       paginator: {
         offset: 0,
         limit: 20
-      }
+      },
+      printList: []
     }
   },
   created() {
@@ -200,7 +171,7 @@ export default {
       this.$router.push({
         name: 'downpage',
         params: {
-          data: this.sotckData
+          data: this.printList
         }
       })
     },
@@ -224,7 +195,7 @@ export default {
       this.dialogEditVisible = true
     },
     handleSpuDelete(id) {
-      this.$confirm('此操作将删除该案例, 是否继续?', '提示', {
+      this.$confirm('此操作将删除该款式, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -263,14 +234,14 @@ export default {
     },
     handleImgChange(file) {
       console.log(file)
-      const isJPG = file.raw.type === 'image/jpeg'
-      const isLt200KB = file.raw.size < 204800
+      const isJPG = file.raw.type === 'image/jpeg' || file.raw.type === 'image/png'
+      const isLt200KB = file.raw.size < 307200
 
       if (!isJPG) {
-        this.$message.error('图片只能是 JPG 格式')
+        this.$message.error('图片只能是 JPG 或 PNG 格式')
       }
       if (!isLt200KB) {
-        this.$message.error('图片大小不能超过 200KB')
+        this.$message.error('图片大小不能超过 300KB')
       }
       if (isJPG && isLt200KB) {
         this.imageUrl_temp = URL.createObjectURL(file.raw)
@@ -302,6 +273,14 @@ export default {
           this.$message.error('修改失败，请稍后重试')
         }
       })
+    },
+    handleSelectionChange(list) {
+      const printList_temp = []
+      for (const i in list) {
+        console.log(i)
+        printList_temp.push(list[i]['Id'])
+      }
+      this.printList = printList_temp
     }
   }
 }

@@ -26,6 +26,12 @@ export function deleteErpSpu(id) {
 }
 
 // 获取打印列表
+export function getPrintList(id_arr) {
+  return request({
+    url: '/stock/getPrintList?id=' + id_arr,
+    method: 'get'
+  })
+}
 
 // 获取spu详情（sku列表）
 export function stockDetails(id) {
