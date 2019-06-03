@@ -9,7 +9,7 @@ export function stockList(offset, limit) {
 }
 
 // 修改spu信息
-export function uploadErpSpu(data) {
+export function updateErpSpu(data) {
   return request({
     url: '/stock/updateErpSpu',
     method: 'put',
@@ -41,10 +41,6 @@ export function stockDetails(id) {
   })
 }
 
-// 修改sku信息
-
-// 删除sku
-
 // 上传spu图片
 export function uploadSpuPic(data) {
   return request({
@@ -60,5 +56,32 @@ export function uploadSpuXls(data) {
     url: '/stock/uploadStock',
     method: 'post',
     data: data
+  })
+}
+
+// 新增sku信息
+export function addErpSku(data) {
+  console.log(data)
+  return request({
+    url: '/stock/details/addErpSku',
+    method: 'post',
+    data: data
+  })
+}
+
+// 修改sku信息
+export function updateErpSku(data) {
+  return request({
+    url: '/stock/details/updateErpSku',
+    method: 'put',
+    data: data
+  })
+}
+
+// 删除sku
+export function deleteErpSku(id) {
+  return request({
+    url: '/stock/details/deleteErpSku?skuId=' + id,
+    method: 'post'
   })
 }

@@ -16,10 +16,10 @@
               <el-button type="primary">上传款式</el-button>
             </el-upload>
           </el-col>
-          <el-col :span="19">
+          <el-col :span="1">
             <el-button type="primary" @click="toPrint()">打印标签</el-button>
           </el-col>
-          <el-col :span="3">
+          <el-col :span="3" :offset="17">
             <el-input
               v-model="parmas.first"
               placeholder="请输入款式名"
@@ -47,8 +47,10 @@
         </el-row>
       </div>
       <div class="box-table">
+        <!-- spu列表 -->
         <el-table
           :data="stockData"
+          stripe
           @row-click="toSectionDetails"
           @selection-change="handleSelectionChange"
         >
@@ -70,11 +72,6 @@
           <el-table-column label="拿货编号" align="center" prop="GetGoodsNum" />
           <el-table-column label="价格" align="center" prop="Price" />
           <el-table-column label="备注" align="center" prop="Remark" />
-          <!-- <el-table-column
-            label="状态"
-            align="center"
-            prop="Status"
-          /> -->
           <el-table-column label="操作" align="center" width="150">
             <template slot-scope="scope">
               <a @click="handleSpuEdit(scope.row.Id)">编辑</a>
@@ -126,7 +123,7 @@
 </template>
 
 <script>
-import { stockList, uploadSpuXls, uploadSpuPic, uploadErpSpu, deleteErpSpu } from '@/api/stock'
+import { stockList, uploadSpuXls, uploadSpuPic, updateErpSpu, deleteErpSpu } from '@/api/stock'
 // import qs from 'qs'
 
 export default {
@@ -264,7 +261,7 @@ export default {
     editSubmit() { // 提交修改
       this.dialogEditVisible = false
       this.editSpuInfo.Img = 'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/' + this.editSpuInfo.SectionNum + '.jpg'
-      uploadErpSpu(this.editSpuInfo).then(res => {
+      updateErpSpu(this.editSpuInfo).then(res => {
         if (res.success) {
           this.$refs.spuImgUpload.submit()
           this.getStockList()
