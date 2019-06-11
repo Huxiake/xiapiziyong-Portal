@@ -50,7 +50,7 @@ export function uploadSpuPic(data) {
   })
 }
 
-// 上传spu图片
+// 上传库存xls
 export function uploadSpuXls(data) {
   return request({
     url: '/stock/uploadStock',

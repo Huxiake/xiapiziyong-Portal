@@ -6,43 +6,32 @@
       </div>
       <div class="box-tools">
         <el-row :gutter="16" type="flex" justify="right">
+          <el-col :span="3" :offset="20">
+            <el-input
+              v-model="parmas.first"
+              placeholder="请输入款号"
+            />
+          </el-col>
           <el-col :span="1.5">
+            <el-button type="primary" @click="1">查询</el-button>
+          </el-col>
+        </el-row>
+        <el-row style="margin-top:20px;margin-bottom:20px" type="flex" justify="space-around">
+          <el-col :span="22">
+            <el-button type="primary" @click="1">扫描入库</el-button>
+            <el-button type="primary" @click="toPrint()">打印标签</el-button>
+          </el-col>
+          <el-col :span="2">
             <el-upload
+              class="upload-demo"
               action=""
+              style="float:right"
               :show-file-list="false"
               :before-upload="beforeXlsUpload"
               :http-request="uploadXlsFile"
             >
-              <el-button type="primary">上传款式</el-button>
+              <el-button type="warning">上传款式</el-button>
             </el-upload>
-          </el-col>
-          <el-col :span="1">
-            <el-button type="primary" @click="toPrint()">打印标签</el-button>
-          </el-col>
-          <el-col :span="3" :offset="17">
-            <el-input
-              v-model="parmas.first"
-              placeholder="请输入款式名"
-            />
-          </el-col>
-          <!-- <el-col :span="3">
-            <el-select v-model="parmas.first" placeholder="请选择">
-              <el-option
-                label="全部"
-                value=""
-              />
-              <el-option
-                label="上架"
-                value="enabled"
-              />
-              <el-option
-                label="下架"
-                value="disabled"
-              />
-            </el-select>
-          </el-col> -->
-          <el-col :span="1.5">
-            <el-button type="primary">查询</el-button>
           </el-col>
         </el-row>
       </div>
@@ -74,8 +63,8 @@
           <el-table-column label="备注" align="center" prop="Remark" />
           <el-table-column label="操作" align="center" width="150">
             <template slot-scope="scope">
-              <a @click="handleSpuEdit(scope.row.Id)">编辑</a>
-              <a @click="handleSpuDelete(scope.row.Id)">删除</a>
+              <el-button type="primary" size="mini" @click="handleSpuEdit(scope.row.Id)">编辑</el-button>
+              <el-button size="mini" @click="handleSpuDelete(scope.row.Id)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -224,8 +213,11 @@ export default {
       // 文件对象
       form.append('file', fileObj)
       uploadSpuXls(form).then(res => {
-        if (!res.success) {
-          this.$message.error('图片上传失败')
+        if (res.success) {
+          this.$message.success(res.msg)
+          this.getStockList()
+        } else {
+          this.$message.error(res.msg)
         }
       })
     },

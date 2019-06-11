@@ -6,12 +6,7 @@
       </div>
       <div class="box-tools">
         <el-row :gutter="16" type="flex" justify="right">
-          <el-col :span="17">
-            <!-- <el-button type="primary" @click="handleNew">导入订单</el-button> -->
-            <!-- <el-button type="primary" @click="handleNew">配货</el-button>
-            <el-button type="primary" @click="handleNew">生成拿货单</el-button> -->
-          </el-col>
-          <el-col :span="3">
+          <el-col :span="3" :offset="17">
             <el-input
               v-model="parmas.first"
               placeholder="请输入款号"
