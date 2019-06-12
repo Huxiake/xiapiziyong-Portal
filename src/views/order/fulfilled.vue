@@ -16,15 +16,11 @@
             <el-button type="primary" @click="handleGetPaper">查询</el-button>
           </el-col>
         </el-row>
-        <!-- <el-row style="margin-top:20px;margin-bottom:20px">
+        <el-row style="margin-top:20px;margin-bottom:20px">
           <el-col :span="22">
-            <el-button type="primary" @click="handleNew">配货</el-button>
-            <el-button type="primary" @click="handleNew">生成拿货单</el-button>
+            <el-button type="primary" @click="handleNew">完成拣货</el-button>
           </el-col>
-          <el-col :span="2">
-            <el-button type="warning" style="float:right" @click="handleNew">导入订单</el-button>
-          </el-col>
-        </el-row> -->
+        </el-row>
       </div>
       <div class="box-table">
         <el-table>

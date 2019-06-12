@@ -59,12 +59,31 @@ export const constantRoutes = [
   {
     path: '/order',
     component: Layout,
+    meta: { title: '订单管理', icon: 'dingdan' },
     children: [
       {
-        path: 'index',
+        path: 'pending',
+        name: 'pending',
+        component: () => import('@/views/order/pending'),
+        meta: { title: '待处理', icon: 'pending' }
+      },
+      {
+        path: 'fulfilled',
+        name: 'fulfilled',
+        component: () => import('@/views/order/fulfilled'),
+        meta: { title: '已配货', icon: 'fulfilled' }
+      },
+      {
+        path: 'completed',
+        name: 'completed',
+        component: () => import('@/views/order/completed'),
+        meta: { title: '已完成', icon: 'completed' }
+      },
+      {
+        path: 'all',
         name: 'order',
         component: () => import('@/views/order/index'),
-        meta: { title: '订单管理', icon: 'dingdan' }
+        meta: { title: '全部', icon: 'dingdan' }
       }
     ]
   },

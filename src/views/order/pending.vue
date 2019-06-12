@@ -16,54 +16,28 @@
             <el-button type="primary" @click="handleGetPaper">查询</el-button>
           </el-col>
         </el-row>
-        <!-- <el-row style="margin-top:20px;margin-bottom:20px">
+        <el-row style="margin-top:20px;margin-bottom:20px">
           <el-col :span="22">
-            <el-button type="primary" @click="handleNew">配货</el-button>
+            <!-- <el-button type="primary" @click="handleNew">配货</el-button> -->
             <el-button type="primary" @click="handleNew">生成拿货单</el-button>
           </el-col>
           <el-col :span="2">
             <el-button type="warning" style="float:right" @click="handleNew">导入订单</el-button>
           </el-col>
-        </el-row> -->
+        </el-row>
       </div>
       <div class="box-table">
         <el-table>
-          <el-table-column
-            label="订单编号"
-            align="center"
-          />
-          <el-table-column
-            label="时间"
-            align="center"
-          />
-          <el-table-column
-            label="买家公司名"
-            align="center"
-          />
-          <el-table-column
-            label="买家会员名"
-            align="center"
-          />
-          <el-table-column
-            label="状态"
-            align="center"
-          />
-          <el-table-column
-            label="订单总金额"
-            align="center"
-          />
-          <el-table-column
-            label="实付金额"
-            align="center"
-          />
-          <el-table-column
-            label="买家留言"
-            align="center"
-          />
-          <el-table-column
-            label="备注"
-            align="center"
-          />
+          <el-table-column label="订单编号" align="center" />
+          <el-table-column label="时间" align="center" />
+          <el-table-column label="买家公司名" align="center" />
+          <el-table-column label="买家会员名" align="center" />
+          <el-table-column label="订单状态" align="center" />
+          <el-table-column label="订单总金额" align="center" />
+          <el-table-column label="实付金额" align="center" />
+          <el-table-column label="买家留言" align="center" />
+          <el-table-column label="仓库状态" align="center" />
+          <el-table-column label="备注" align="center" />
         </el-table>
       </div>
     </el-card>
