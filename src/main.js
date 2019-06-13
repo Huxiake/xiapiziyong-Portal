@@ -6,6 +6,7 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 // import locale from 'element-ui/lib/locale/lang/en' // lang i18n
 import htmlToPdf from '@/utils/htmlToPdf'
+import moment from 'moment'
 
 import '@/styles/index.scss' // global css
 
@@ -32,6 +33,8 @@ if (process.env.NODE_ENV === 'production') {
 // set ElementUI lang to EN
 Vue.use(ElementUI)
 Vue.use(htmlToPdf)
+
+Vue.prototype.$moment = moment
 
 Vue.config.productionTip = false
 

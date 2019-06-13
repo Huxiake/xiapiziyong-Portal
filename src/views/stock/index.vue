@@ -8,18 +8,19 @@
         <el-row :gutter="16" type="flex" justify="right">
           <el-col :span="3" :offset="20">
             <el-input
-              v-model="parmas.first"
+              v-model="paginator.SectionNum"
+              size="medium"
               placeholder="请输入款号"
             />
           </el-col>
           <el-col :span="1.5">
-            <el-button type="primary" @click="1">查询</el-button>
+            <el-button type="primary" size="medium" @click="getList">查询</el-button>
           </el-col>
         </el-row>
         <el-row style="margin-top:20px;margin-bottom:20px" type="flex" justify="space-around">
           <el-col :span="22">
-            <el-button type="primary" @click="1">扫描入库</el-button>
-            <el-button type="primary" @click="toPrint()">打印标签</el-button>
+            <el-button type="primary" size="medium" @click="1">扫描入库</el-button>
+            <el-button type="primary" size="medium" @click="toPrint()">打印标签</el-button>
           </el-col>
           <el-col :span="2">
             <el-upload
@@ -30,7 +31,7 @@
               :before-upload="beforeXlsUpload"
               :http-request="uploadXlsFile"
             >
-              <el-button type="warning">上传款式</el-button>
+              <el-button size="medium" type="warning">上传款式</el-button>
             </el-upload>
           </el-col>
         </el-row>
@@ -113,7 +114,7 @@
 
 <script>
 import { stockList, uploadSpuXls, uploadSpuPic, updateErpSpu, deleteErpSpu } from '@/api/stock'
-// import qs from 'qs'
+import qs from 'qs'
 
 export default {
   data() {
@@ -136,17 +137,19 @@ export default {
       stockData: [],
       paginator: {
         offset: 0,
-        limit: 20
+        limit: 20,
+        SectionNum: ''
       },
-      printList: []
+      selectList: []
     }
   },
   created() {
-    this.getStockList(this.paginator.offset, this.paginator.limit)
+    this.getList()
   },
   methods: {
-    getStockList(offset, limit) {
-      stockList(offset, limit).then(res => {
+    getList() {
+      const searchAttrs = qs.stringify(this.paginator)
+      stockList(searchAttrs).then(res => {
         if (res.success) {
           this.stockData = res.data.rows
         }
@@ -157,7 +160,7 @@ export default {
       this.$router.push({
         name: 'downpage',
         params: {
-          data: this.printList
+          data: this.selectList
         }
       })
     },
@@ -192,7 +195,7 @@ export default {
               type: 'success',
               message: '删除成功!'
             })
-            this.getStockList()
+            this.getList()
           }
         })
       })
@@ -215,7 +218,7 @@ export default {
       uploadSpuXls(form).then(res => {
         if (res.success) {
           this.$message.success(res.msg)
-          this.getStockList()
+          this.getList()
         } else {
           this.$message.error(res.msg)
         }
@@ -256,7 +259,7 @@ export default {
       updateErpSpu(this.editSpuInfo).then(res => {
         if (res.success) {
           this.$refs.spuImgUpload.submit()
-          this.getStockList()
+          this.getList()
           this.editSpuInfo = {}
         } else {
           this.$message.error('修改失败，请稍后重试')
@@ -264,12 +267,12 @@ export default {
       })
     },
     handleSelectionChange(list) {
-      const printList_temp = []
+      const selectList_temp = []
       for (const i in list) {
         console.log(i)
-        printList_temp.push(list[i]['Id'])
+        selectList_temp.push(list[i]['Id'])
       }
-      this.printList = printList_temp
+      this.selectList = selectList_temp
     }
   }
 }

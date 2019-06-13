@@ -1,9 +1,9 @@
 import request from '@/utils/request'
 
 // 获取spu列表
-export function stockList(offset, limit) {
+export function stockList(params) {
   return request({
-    url: '/stock/getErpSpuList?offset=' + offset + '&limit=' + limit,
+    url: '/stock/getErpSpuList?' + params,
     method: 'get'
   })
 }
