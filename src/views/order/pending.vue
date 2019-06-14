@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>订单管理</span>
+        <span>待处理订单</span>
       </div>
       <div class="box-tools">
         <el-row :gutter="16" type="flex" justify="right">
@@ -98,7 +98,8 @@ export default {
       paginator: {
         offset: 0,
         limit: 20,
-        OrderNum: ''
+        OrderNum: '',
+        ErpStatus: '["pending","waiting","forPickup"]'
       },
       selectList: []
     }

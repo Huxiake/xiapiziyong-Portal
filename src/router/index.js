@@ -82,7 +82,7 @@ export const constantRoutes = [
       {
         path: 'all',
         name: 'order',
-        component: () => import('@/views/order/index'),
+        component: () => import('@/views/order/all'),
         meta: { title: '全部', icon: 'dingdan' }
       }
     ]

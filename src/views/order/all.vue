@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>已完成订单</span>
+        <span>全部订单</span>
       </div>
       <div class="box-tools">
         <el-row :gutter="16" type="flex" justify="right">
@@ -17,6 +17,15 @@
             <el-button type="primary" size="medium" @click="getList">查询</el-button>
           </el-col>
         </el-row>
+        <el-row style="margin-top:20px;margin-bottom:20px">
+          <el-col :span="22">
+            <el-button type="primary" size="medium" @click="dealWithOrder">配货</el-button>
+            <el-button size="medium" @click="1">标记待货</el-button>
+          </el-col>
+          <el-col :span="2">
+            <el-button type="warning" style="float:right" size="medium" @click="1">导入订单</el-button>
+          </el-col>
+        </el-row>
       </div>
       <div class="box-table">
         <el-table
@@ -24,6 +33,7 @@
           stripe
           @selection-change="handleSelectionChange"
         >
+          <el-table-column type="selection" width="55" />
           <el-table-column type="expand">
             <template slot-scope="scope">
               <div class="expand-header">订单明细:</div>
@@ -88,8 +98,7 @@ export default {
       paginator: {
         offset: 0,
         limit: 20,
-        OrderNum: '',
-        ErpStatus: '["complete"]'
+        OrderNum: ''
       },
       selectList: []
     }
