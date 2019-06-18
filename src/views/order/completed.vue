@@ -5,7 +5,7 @@
         <span>已完成订单</span>
       </div>
       <div class="box-tools">
-        <el-row :gutter="16" type="flex" justify="right">
+        <el-row :gutter="16" type="flex" justify="right" style="margin-bottom:20px">
           <el-col :span="3" :offset="20">
             <el-input
               v-model="paginator.OrderNum"
