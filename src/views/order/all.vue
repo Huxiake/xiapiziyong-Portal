@@ -8,12 +8,14 @@
         <el-row :gutter="16" type="flex" justify="right" style="margin-bottom:20px">
           <el-col :span="6" :offset="14">
             <el-date-picker
-              v-model="value1"
-              type="datetimerange"
+              v-model="pickerDate"
+              value-format="yyyy-MM-dd 00:00:00"
+              type="daterange"
               size="medium"
-              range-separator="至"
+              range-separator="-"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
+              @change="testchang"
             />
           </el-col>
           <el-col :span="4">
@@ -95,10 +97,13 @@ export default {
   data() {
     return {
       tableData: [],
+      pickerDate: '',
       paginator: {
+        Date: '',
         offset: 0,
         limit: 20,
-        OrderNum: ''
+        OrderNum: '',
+        ErpStatus: ''
       },
       selectList: []
     }
@@ -141,6 +146,11 @@ export default {
     },
     deleteOrder(id) {
       console.log(id)
+    },
+    testchang() {
+      console.log(this.pickerDate)
+      this.paginator.Date = '["' + this.pickerDate.join('","') + '"]'
+      console.log(this.paginator.Date)
     }
   }
 }
