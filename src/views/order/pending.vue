@@ -62,12 +62,11 @@
               {{ $moment(scope.row.OrderCreateTime).format('YYYY-MM-DD hh:mm:ss') }}
             </template>
           </el-table-column>
-          <el-table-column label="买家公司名" prop="BuyerCompanyName" align="center" />
-          <el-table-column label="买家会员名" prop="BuyerMemberName" align="center" />
-          <!-- <el-table-column label="订单总金额" prop="GoodsTotalPrice" align="center" width="80" /> -->
+          <el-table-column :formatter="tableFormatter" label="买家公司名" prop="BuyerCompanyName" align="center" />
+          <el-table-column :formatter="tableFormatter" label="买家会员名" prop="BuyerMemberName" align="center" />
           <el-table-column label="实付金额" prop="GoodsRealPrice" align="center" width="80" />
-          <el-table-column label="买家留言" prop="BuyerRemake" align="center" />
-          <el-table-column label="备注" prop="Rename" align="center" />
+          <el-table-column :formatter="tableFormatter" label="买家留言" prop="BuyerRemake" align="center" />
+          <el-table-column :formatter="tableFormatter" label="备注" prop="Remark" align="center" />
           <el-table-column label="订单状态" prop="OrderStatus" align="center" />
           <el-table-column label="仓库状态" prop="ErpStatus" align="center" width="80">
             <template slot-scope="scope">
@@ -142,6 +141,14 @@ export default {
     },
     deleteOrder(id) {
       console.log(id)
+    },
+    tableFormatter(row, column, cellValue) {
+      let res = false
+      if (cellValue === '') {
+        console.log(row, column)
+        res = true
+      }
+      return res ? '-' : cellValue
     }
   }
 }
