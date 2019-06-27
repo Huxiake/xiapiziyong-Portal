@@ -12,6 +12,6 @@ export function orderList(params) {
 export function toGetGoodsList(params) {
   return request({
     url: '/order/toGetGoodsList?' + params,
-    method: 'get'
+    method: 'post'
   })
 }

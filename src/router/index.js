@@ -104,7 +104,7 @@ export const constantRoutes = [
       {
         path: 'feedback',
         name: 'feedback',
-        // component: () => import('@/views/tree/index'),
+        component: () => import('@/views/get_goods/feedback'),
         meta: { title: '拿货反馈', icon: 'fankui' }
       }
     ]

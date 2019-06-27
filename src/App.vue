@@ -6,6 +6,10 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  created() {
+    // 询问是否允许通知
+    Notification.requestPermission()
+  }
 }
 </script>
