@@ -56,6 +56,13 @@
           </el-table-column>
           <el-table-column label="数量" prop="Amount" align="center" />
           <el-table-column label="备注" prop="Remark" align="center" />
+          <el-table-column label="状态" align="center">
+            <template slot-scope="scope">
+              <el-tag v-if="scope.row.IsLack === 0 && scope.row.IsGet === 0" type="info">待拿货</el-tag>
+              <el-tag v-if="scope.row.IsLack === 1" type="danger">缺货</el-tag>
+              <el-tag v-if="scope.row.IsGet === 1" type="success">已拿货</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column label="操作" prop="" align="center" />
         </el-table>
       </div>

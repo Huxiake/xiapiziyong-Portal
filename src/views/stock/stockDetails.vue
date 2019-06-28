@@ -46,22 +46,19 @@
         <el-table :data="detailsData" stripe>
           <el-table-column label="颜色" align="center">
             <template slot-scope="scope">
-              <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="scope.row.Color" style="width:180px" />
-              <!-- <el-input v-if="newSkuInfo.status&&!scope.row.Id" v-model="newSkuInfo.content.Color" style="width:180px" /> -->
+              <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="editSkuInfo.Color" style="width:180px" />
               <span v-if="scope.row.Id !== editSkuInfo.Id">{{ scope.row.Color }}</span>
             </template>
           </el-table-column>
           <el-table-column label="尺码" align="center">
             <template slot-scope="scope">
-              <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="scope.row.Size" style="width:180px" />
-              <!-- <el-input v-if="newSkuInfo.status&&!scope.row.Id" v-model="newSkuInfo.content.Size" style="width:180px" /> -->
+              <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="editSkuInfo.Size" style="width:180px" />
               <span v-if="scope.row.Id !== editSkuInfo.Id">{{ scope.row.Size }}</span>
             </template>
           </el-table-column>
           <el-table-column label="数量" align="center">
             <template slot-scope="scope">
-              <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="scope.row.Amount" style="width:180px" />
-              <!-- <el-input v-if="newSkuInfo.status&&!scope.row.Id" v-model="newSkuInfo.content.Amount" style="width:180px" /> -->
+              <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="editSkuInfo.Amount" style="width:180px" />
               <span v-if="scope.row.Id !== editSkuInfo.Id">{{ scope.row.Amount }}</span>
             </template>
           </el-table-column>
@@ -119,7 +116,6 @@ export default {
       this.detailsData.push(this.editSkuInfo)
     },
     handleSkuEdit(item) {
-      console.log(item.Id)
       this.editSkuInfo = item
     },
     handleSkuSave() {
