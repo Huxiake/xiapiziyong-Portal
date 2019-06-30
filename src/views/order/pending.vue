@@ -20,7 +20,7 @@
         <el-row style="margin-top:20px;margin-bottom:20px">
           <el-col :span="22">
             <el-button type="primary" size="medium" @click="dealWithOrder">配货</el-button>
-            <el-button size="medium" @click="1">标记待货</el-button>
+            <el-button size="medium" @click="handleMarkWaiting">标记待货</el-button>
           </el-col>
           <el-col :span="2">
             <el-button type="warning" style="float:right" size="medium" @click="1">导入订单</el-button>
@@ -68,7 +68,7 @@
           <el-table-column :formatter="tableFormatter" label="买家留言" prop="BuyerRemake" align="center" />
           <el-table-column :formatter="tableFormatter" label="备注" prop="Remark" align="center" />
           <el-table-column label="订单状态" prop="OrderStatus" align="center" />
-          <el-table-column label="仓库状态" prop="ErpStatus" align="center" width="80">
+          <el-table-column label="仓库状态" prop="ErpStatus" align="center" width="100">
             <template slot-scope="scope">
               <el-tag v-if="scope.row.ErpStatus === 'pending'" type="info">新订单</el-tag>
               <el-tag v-if="scope.row.ErpStatus === 'forPickup'">处理中</el-tag>
@@ -87,10 +87,17 @@
 </template>
 
 <script>
-import { orderList, toGetGoodsList } from '@/api/order'
+import { orderList, toGetGoodsList, markWaiting } from '@/api/order'
 import qs from 'qs'
 
 export default {
+  /**
+   * pending 待处理
+   * waiting 待货
+   * forPickup 拿货中
+   * fulfilled 已配货
+   * complete 完成
+   */
   data() {
     return {
       tableData: [],
@@ -138,6 +145,17 @@ export default {
       this.selectList = selectList_temp
       // this.selectList = list
       console.log(this.selectList)
+    },
+    handleMarkWaiting() {
+      const orderList = 'OrderList=[' + this.selectList.join(',') + ']'
+      markWaiting(orderList).then(res => {
+        if (res.success) {
+          this.$message.success('标记待货成功')
+        }
+      })
+        .catch(e => {
+          console.log(e)
+        })
     },
     deleteOrder(id) {
       console.log(id)

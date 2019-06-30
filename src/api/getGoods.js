@@ -19,7 +19,15 @@ export function getFeedback(params) {
 // 标记为已读
 export function markRead(params) {
   return request({
-    url: '/getgoods/markRead?' + params,
+    url: '/getgoods/markRead?id=' + params,
+    method: 'post'
+  })
+}
+
+// 处理反馈
+export function dealFeedback(params) {
+  return request({
+    url: '/getgoods/dealFeedback?' + params,
     method: 'post'
   })
 }

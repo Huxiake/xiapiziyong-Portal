@@ -6,10 +6,7 @@
       </div>
       <div class="box-tools">
         <el-row :gutter="16" type="flex" justify="right">
-          <el-col :span="20">
-            <!-- <el-button type="primary" @click="1">打印</el-button> -->
-          </el-col>
-          <el-col :span="3">
+          <el-col :span="3" :offset="20">
             <el-input
               v-model="paginator.OrderNum"
               placeholder="请输入订单号"
@@ -39,14 +36,19 @@
               </el-popover>
             </template>
           </el-table-column>
+          <el-table-column label="订单号" align="center" width="200">
+            <template slot-scope="scope">
+              <div>{{ scope.row.ErpGetGoods.OrderNum }}</div>
+            </template>
+          </el-table-column>
           <el-table-column label="款号" align="center" width="150">
             <template slot-scope="scope">
-              <div v-if="scope.row.Id !== editSkuInfo.Id">{{ scope.row.ErpGetGoods.ErpSku.SectionNum }}</div>
+              <div>{{ scope.row.ErpGetGoods.ErpSku.SectionNum }}</div>
             </template>
           </el-table-column>
           <el-table-column label="拿货编号" align="center">
             <template slot-scope="scope">
-              <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="editSkuInfo.GetGoodsNum" style="width:180px" @change="editFeedbackItem('GetGoodsNum')"/>
+              <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="editSkuInfo.GetGoodsNum" style="width:180px" @change="editFeedbackItem('GetGoodsNum')" />
               <div v-if="scope.row.Id !== editSkuInfo.Id">{{ scope.row.ErpGetGoods.ErpSku.ErpSpu.GetGoodsNum }}</div>
             </template>
           </el-table-column>
@@ -74,13 +76,13 @@
               <div v-if="scope.row.Id !== editSkuInfo.Id">{{ scope.row.ErpGetGoods.Amount }}</div>
             </template>
           </el-table-column>
-          <el-table-column label="状态" align="center" width="100">
+          <!-- <el-table-column label="状态" align="center" width="100">
             <template slot-scope="scope">
               <el-tag v-if="scope.row.IsDeal === 0" type="info">未处理</el-tag>
               <el-tag v-if="scope.row.IsDeal === 1" type="success">已处理</el-tag>
             </template>
-          </el-table-column>
-          <el-table-column label="操作" align="center" width="150">
+          </el-table-column> -->
+          <el-table-column label="操作" align="center" width="200">
             <template slot-scope="scope">
               <el-button v-if="scope.row.Id === editSkuInfo.Id" type="primary" size="mini" @click="handleSkuSave()">保存</el-button>
               <el-button v-if="scope.row.Id === editSkuInfo.Id" size="mini" @click="cancelSkuSave()">取消</el-button>
@@ -90,12 +92,11 @@
         </el-table>
       </div>
     </el-card>
-    <iframe ref="myAudio" style="display:none" src="" />
   </div>
 </template>
 
 <script>
-import { getFeedback, markRead } from '@/api/getGoods'
+import { getFeedback, markRead, dealFeedback } from '@/api/getGoods'
 import qs from 'qs'
 
 export default {
@@ -105,7 +106,8 @@ export default {
       paginator: {
         offset: 0,
         limit: 20,
-        OrderNum: ''
+        OrderNum: '',
+        deal: 0
       },
       editSkuInfo: {
         'Id': '',
@@ -119,12 +121,12 @@ export default {
         'Price': '',
         'Amount': ''
       },
-      sendSkuInfo: {}
+      sendSkuInfo: {},
+      feedbackIdList: []
     }
   },
   created() {
     this.getList()
-    // this.sendNotice()
   },
   methods: {
     getList() {
@@ -132,14 +134,24 @@ export default {
       getFeedback(searchAttrs)
         .then(res => {
           if (res.success) {
-            console.log(res)
             this.tableData = res.data.rows
-            console.log('tabledata', this.tableData)
+            const dataLen = this.tableData.length
+            for (let i = 0; i < dataLen; i++) {
+              this.feedbackIdList.push(this.tableData[i].Id)
+            }
+            console.log(this.feedbackIdList)
+            this.markRead()
           }
         })
         .catch(err => {
           console.log(err)
         })
+    },
+    markRead() {
+      const idList = '[' + this.feedbackIdList.join(',') + ']'
+      markRead(idList).then(res => {
+        console.log(res)
+      })
     },
     handleSelectionChange(list) {
       const selectList_temp = []
@@ -170,14 +182,16 @@ export default {
     editFeedbackItem(key) {
       this.sendSkuInfo[key] = this.editSkuInfo[key]
     },
-    // 开启弹窗
-    sendNotice() {
-      new Notification('缺货反馈', {
-        body: 'testtest',
-        icon: 'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/logo.jpg'
-      })
-      this.$nextTick(() => {
-        console.log(this.$refs.myAudio.src = 'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/8407.mp3')
+    handleSkuSave() {
+      const skuInfo = qs.stringify(this.sendSkuInfo)
+      dealFeedback(skuInfo).then(res => {
+        if (res.success) {
+          this.$message.success('处理成功!')
+          this.editSkuInfo = {}
+          this.getList()
+        } else {
+          this.$message.error('处理失败，请重试!')
+        }
       })
     }
   }
@@ -189,4 +203,3 @@ export default {
     min-height: calc(100vh - 70px);
   }
 </style>
-

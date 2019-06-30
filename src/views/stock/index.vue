@@ -62,7 +62,7 @@
           <el-table-column label="拿货编号" align="center" prop="GetGoodsNum" />
           <el-table-column label="价格" align="center" prop="Price" />
           <el-table-column label="备注" align="center" prop="Remark" />
-          <el-table-column label="操作" align="center" width="150">
+          <el-table-column label="操作" align="center" width="200">
             <template slot-scope="scope">
               <el-button type="primary" size="mini" @click="handleSpuEdit(scope.row.Id)">编辑</el-button>
               <el-button size="mini" @click="handleSpuDelete(scope.row.Id)">删除</el-button>

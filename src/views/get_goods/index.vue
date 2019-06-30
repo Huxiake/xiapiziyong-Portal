@@ -39,6 +39,11 @@
               </el-popover>
             </template>
           </el-table-column>
+          <el-table-column label="订单号" align="center" width="200">
+            <template slot-scope="scope">
+              <div>{{ scope.row.OrderNum }}</div>
+            </template>
+          </el-table-column>
           <el-table-column label="款号" align="center">
             <template slot-scope="scope">
               <div>{{ scope.row.ErpSku.SectionNum }}</div>

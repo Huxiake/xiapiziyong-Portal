@@ -71,10 +71,12 @@
           <el-table-column label="买家留言" prop="BuyerRemake" align="center" />
           <el-table-column label="备注" prop="Rename" align="center" />
           <el-table-column label="订单状态" prop="OrderStatus" align="center" />
-          <el-table-column label="仓库状态" prop="ErpStatus" align="center" width="80">
+          <el-table-column label="仓库状态" prop="ErpStatus" align="center" width="100">
             <template slot-scope="scope">
               <el-tag v-if="scope.row.ErpStatus === 'pending'" type="info">新订单</el-tag>
               <el-tag v-if="scope.row.ErpStatus === 'forPickup'">处理中</el-tag>
+              <el-tag v-if="scope.row.ErpStatus === 'fulfilled'" effect="dark">已配货</el-tag>
+              <el-tag v-if="scope.row.ErpStatus === 'complete'" type="success">已完成</el-tag>
               <el-tag v-if="scope.row.ErpStatus === 'waiting'" type="warning">待货</el-tag>
             </template>
           </el-table-column>

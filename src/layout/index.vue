@@ -8,12 +8,14 @@
       </div>
       <app-main />
     </div>
+    <iframe ref="myAudio" style="display:none" src="" />
   </div>
 </template>
 
 <script>
 import { Navbar, Sidebar, AppMain } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
+import { getFeedback } from '@/api/getGoods'
 
 export default {
   name: 'Layout',
@@ -23,6 +25,11 @@ export default {
     AppMain
   },
   mixins: [ResizeMixin],
+  data() {
+    return {
+      newNotice: []
+    }
+  },
   computed: {
     sidebar() {
       return this.$store.state.app.sidebar
@@ -42,9 +49,41 @@ export default {
       }
     }
   },
+  created() {
+    this.getUnRead()
+    setInterval(() => {
+      this.getUnRead()
+    }, 30000)
+  },
   methods: {
     handleClickOutside() {
       this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
+    },
+    // 拉取未读拿货反馈
+    getUnRead() {
+      getFeedback('IsRead=no').then(res => {
+        if (res.success) {
+          this.newNotice = res.data.rows === null ? [] : res.data.rows
+          if (this.newNotice.length > 0) {
+            this.sendNotice()
+          }
+        }
+      })
+    },
+    // 开启弹窗
+    sendNotice() {
+      const notice = new Notification('未读的缺货反馈', {
+        body: '有' + this.newNotice.length + '条未读的缺货反馈，请及时处理！',
+        icon: 'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/logo.jpg'
+      })
+      this.$nextTick(() => {
+        console.log(this.$refs.myAudio.src = 'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/8407.mp3')
+      })
+      console.log(notice)
+      notice.onclick = e => {
+        window.open
+        this.$router.push({ path: '/goods/feedback' })
+      }
     }
   }
 }
