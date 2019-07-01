@@ -50,7 +50,9 @@
                   <template slot-scope="subScope">
                     <el-tag v-if="subScope.row.ErpStatus === 'pending'" type="info">未处理</el-tag>
                     <el-tag v-if="subScope.row.ErpStatus === 'inStock'" type="success">现货</el-tag>
-                    <el-tag v-if="subScope.row.ErpStatus === 'forPickup'" type="danger">待拿货</el-tag>
+                    <el-tag v-if="subScope.row.ErpStatus === 'get'" type="success">已拿货</el-tag>
+                    <el-tag v-if="subScope.row.ErpStatus === 'forPickup'" type="warning">待拿货</el-tag>
+                    <el-tag v-if="subScope.row.ErpStatus === 'lack'" type="danger">待处理缺货</el-tag>
                   </template>
                 </el-table-column>
               </el-table>
@@ -72,7 +74,7 @@
             <template slot-scope="scope">
               <el-tag v-if="scope.row.ErpStatus === 'pending'" type="info">新订单</el-tag>
               <el-tag v-if="scope.row.ErpStatus === 'forPickup'">处理中</el-tag>
-              <el-tag v-if="scope.row.ErpStatus === 'waiting'" type="warning">待货</el-tag>
+              <el-tag v-if="scope.row.ErpStatus === 'waiting'" type="danger">待货</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" width="80">
@@ -130,6 +132,8 @@ export default {
       const orderList = 'OrderList=[' + this.selectList.join(',') + ']'
       toGetGoodsList(orderList)
         .then(res => {
+          this.$message.success('配货成功！等待拿货')
+          this.getList()
           console.log(res)
         })
         .catch(err => {
@@ -143,14 +147,13 @@ export default {
         selectList_temp.push(list[i]['Id'])
       }
       this.selectList = selectList_temp
-      // this.selectList = list
-      console.log(this.selectList)
     },
     handleMarkWaiting() {
       const orderList = 'OrderList=[' + this.selectList.join(',') + ']'
       markWaiting(orderList).then(res => {
         if (res.success) {
           this.$message.success('标记待货成功')
+          this.getList()
         }
       })
         .catch(e => {

@@ -8,7 +8,7 @@
       </div>
       <app-main />
     </div>
-    <iframe ref="myAudio" style="display:none" src="" />
+    <iframe ref="sound" style="display:none" src="" />
   </div>
 </template>
 
@@ -77,12 +77,17 @@ export default {
         icon: 'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/logo.jpg'
       })
       this.$nextTick(() => {
-        console.log(this.$refs.myAudio.src = 'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/8407.mp3')
+        if (typeof (this.$refs.sound) !== 'undefined') {
+          this.$refs.sound.src = 'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/8407.mp3'
+        }
       })
       console.log(notice)
       notice.onclick = e => {
         window.open
-        this.$router.push({ path: '/goods/feedback' })
+        window.open('#/goods/feedback', '_self')
+        // window.open
+        notice.close()
+        // this.$router.push({ path: '/goods/feedback' })
       }
     }
   }

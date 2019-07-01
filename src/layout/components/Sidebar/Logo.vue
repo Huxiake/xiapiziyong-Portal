@@ -25,8 +25,8 @@ export default {
   },
   data() {
     return {
-      title: 'Warehouse',
-      logo: '/static/img/ERP-logo.b13c3359.png'
+      title: 'OneKey',
+      logo: 'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/ERP-logo.png'
     }
   }
 }

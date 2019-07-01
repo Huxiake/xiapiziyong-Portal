@@ -67,9 +67,7 @@
           <el-table-column label="订单状态" prop="OrderStatus" align="center" />
           <el-table-column label="仓库状态" prop="ErpStatus" align="center" width="100">
             <template slot-scope="scope">
-              <el-tag v-if="scope.row.ErpStatus === 'pending'" type="info">新订单</el-tag>
-              <el-tag v-if="scope.row.ErpStatus === 'forPickup'">处理中</el-tag>
-              <el-tag v-if="scope.row.ErpStatus === 'waiting'" type="warning">待货</el-tag>
+              <el-tag v-if="scope.row.ErpStatus === 'fulfilled'">已配货</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" width="80">

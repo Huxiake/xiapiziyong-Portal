@@ -165,7 +165,6 @@ export default {
       })
     },
     toSectionDetails(row, column, event) {
-      console.log(event.target.innerHTML)
       if (event.target.innerHTML !== '编辑' && event.target.innerHTML !== '删除') {
         this.$router.push({
           name: 'stockDetails',

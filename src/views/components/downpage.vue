@@ -1,7 +1,7 @@
 <template>
-  <div id="pdfDom" :style="{width: pdfWidth, height: pdfHeght}">
+  <div name="pdfDom" :style="{width: pdfWidth, height: pdfHeght}">
     <div v-for="(item_1, i) in pagedata" :key="i">
-      <div v-for="(item_2, j) in item_1.ErpSkus" :key="j" style="width:445.54px;height:340.16px">
+      <div v-for="(item_2, j) in item_1.ErpSkus" :key="j" style="width:445.54px;height:334.16px">
         <!-- <div v-for="(item_2, j) in item_1.ErpSkus" :key="j" style="width:556.92px;height:340.16px"> -->
         <span style="font-size:35px">{{ item_1.SectionNum }}</span>
         <div style="float:right">
@@ -50,8 +50,9 @@ export default {
         })
     },
     qrcode() {
+      console.log('this.pagedata', this.pagedata)
       const dataLen = this.pagedata.length
-      this.pdfHeght = 340.16 * dataLen + 'px'
+      this.pdfHeght = 334.16 * dataLen + 'px'
       for (let i = 0; i < dataLen; i++) {
         const erpSkusLen = this.pagedata[i].ErpSkus.length
         for (let j = 0; j < erpSkusLen; j++) {
