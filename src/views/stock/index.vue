@@ -19,8 +19,8 @@
         </el-row>
         <el-row style="margin-top:20px;margin-bottom:20px" type="flex" justify="space-around">
           <el-col :span="22">
-            <el-button type="primary" size="medium" @click="1">扫描入库</el-button>
-            <el-button type="primary" size="medium" @click="toPrint()">打印标签</el-button>
+            <el-button type="primary" size="medium" @click="handleScaning">扫描入库</el-button>
+            <el-button type="primary" size="medium" @click="toPrint">打印标签</el-button>
           </el-col>
           <el-col :span="2">
             <el-upload
@@ -272,6 +272,11 @@ export default {
         selectList_temp.push(list[i]['Id'])
       }
       this.selectList = selectList_temp
+    },
+    handleScaning() {
+      this.$router.push({
+        name: 'scaning'
+      })
     }
   }
 }

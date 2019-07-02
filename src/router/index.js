@@ -26,7 +26,7 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: '/stock/index',
     hidden: true,
     children: [{
       path: 'dashboard',
@@ -45,6 +45,13 @@ export const constantRoutes = [
         name: 'stock',
         component: () => import('@/views/stock/index'),
         meta: { title: '库存管理', icon: 'kucun' }
+      },
+      {
+        path: 'index/scaning',
+        name: 'scaning',
+        hidden: true,
+        component: () => import('@/views/stock/scaning'),
+        meta: { title: '扫描入库', icon: 'kucun' }
       },
       {
         path: 'details/:id',

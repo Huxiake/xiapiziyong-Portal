@@ -1,7 +1,7 @@
 <template>
-  <div name="pdfDom" :style="{width: pdfWidth, height: pdfHeght}">
+  <div id="pdfDom" :style="{width: pdfWidth, height: pdfHeght}">
     <div v-for="(item_1, i) in pagedata" :key="i">
-      <div v-for="(item_2, j) in item_1.ErpSkus" :key="j" style="width:445.54px;height:334.16px">
+      <div v-for="(item_2, j) in item_1.ErpSkus" :key="j" style="width:445.54px;height:336.16px">
         <!-- <div v-for="(item_2, j) in item_1.ErpSkus" :key="j" style="width:556.92px;height:340.16px"> -->
         <span style="font-size:35px">{{ item_1.SectionNum }}</span>
         <div style="float:right">
@@ -51,16 +51,22 @@ export default {
     },
     qrcode() {
       console.log('this.pagedata', this.pagedata)
-      const dataLen = this.pagedata.length
-      this.pdfHeght = 334.16 * dataLen + 'px'
-      for (let i = 0; i < dataLen; i++) {
+      const spuLen = this.pagedata.length
+      // 计算总长度
+      let skuLen = 0
+      for (let j = 0; j < spuLen; j++) {
+        skuLen = skuLen + this.pagedata[j].ErpSkus.length
+      }
+      console.log('skuLen', skuLen)
+      this.pdfHeght = 334.16 * skuLen + 'px'
+      for (let i = 0; i < spuLen; i++) {
         const erpSkusLen = this.pagedata[i].ErpSkus.length
         for (let j = 0; j < erpSkusLen; j++) {
           console.log(this.pagedata)
           new QRCode('qrDom' + i + j, {
             width: 240,
             height: 240,
-            text: `{"SectionNum":${this.pagedata[i].SectionNum}, "GetGoodsNum": ${this.pagedata[i].GetGoodsNum}, "ErpSkuId": ${this.pagedata[i].ErpSkus[j].Id}, "Amount": ${this.pagedata[i].ErpSkus[j].Amount}}`
+            text: `{"SectionNum":${this.pagedata[i].SectionNum}, "GetGoodsNum": ${this.pagedata[i].GetGoodsNum}, "ErpSkuId": ${this.pagedata[i].ErpSkus[j].Id}, "Color": ${this.pagedata[i].ErpSkus[j].Color}, "Size": ${this.pagedata[i].ErpSkus[j].Size}`
           })
         }
       }
