@@ -4,7 +4,7 @@
       <div slot="header" class="clearfix">
         <span>扫描入库</span>
       </div>
-      <el-input v-model="goodsInfo" @keyup.enter.native="addAnswer" />
+      <el-input ref="scanInput" v-model="goodsInfo" autofocus placeholder="扫码枪输入" @keyup.enter.native="addAnswer" @blur="getFocus" />
     </el-card>
   </div>
 </template>
@@ -20,11 +20,16 @@ export default {
     }
   },
   created() {
-    this.getList()
+    this.getFocus()
   },
   methods: {
     addAnswer() {
       console.log(this.goodsInfo)
+    },
+    getFocus() {
+      this.$nextTick(() => {
+        console.log(this.$refs.scanInput.$el.children[0].focus())
+      })
     }
   }
 }
