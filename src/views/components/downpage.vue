@@ -66,7 +66,7 @@ export default {
           new QRCode('qrDom' + i + j, {
             width: 240,
             height: 240,
-            text: `{"SectionNum":${this.pagedata[i].SectionNum}, "GetGoodsNum": ${this.pagedata[i].GetGoodsNum}, "ErpSkuId": ${this.pagedata[i].ErpSkus[j].Id}, "Color": ${this.pagedata[i].ErpSkus[j].Color}, "Size": ${this.pagedata[i].ErpSkus[j].Size}`
+            text: `{"Img":"${this.pagedata[i].Img}","SectionNum":"${this.pagedata[i].SectionNum}","GetGoodsNum":"${this.pagedata[i].GetGoodsNum}","ErpSkuId":"${this.pagedata[i].ErpSkus[j].Id}","Color":"${this.pagedata[i].ErpSkus[j].Color}","Size":"${this.pagedata[i].ErpSkus[j].Size}"}`
           })
         }
       }

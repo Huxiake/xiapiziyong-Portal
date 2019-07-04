@@ -157,12 +157,14 @@ export default {
     },
     toPrint() {
       // this.getPdf()
-      this.$router.push({
-        name: 'downpage',
-        params: {
-          data: this.selectList
-        }
-      })
+      if (this.selectList.length !== 0) {
+        this.$router.push({
+          name: 'downpage',
+          params: {
+            data: this.selectList
+          }
+        })
+      }
     },
     toSectionDetails(row, column, event) {
       if (event.target.innerHTML !== '编辑' && event.target.innerHTML !== '删除') {
