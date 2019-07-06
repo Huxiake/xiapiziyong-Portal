@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: 'Vue Admin Template',
+  title: '一键跨境ERP',
 
   /**
    * @type {boolean} true | false
