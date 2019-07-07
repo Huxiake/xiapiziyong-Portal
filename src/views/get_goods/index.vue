@@ -7,7 +7,7 @@
       <div class="box-tools">
         <el-row :gutter="16" type="flex" justify="right">
           <el-col :span="20">
-            <el-button type="primary" @click="1">打印</el-button>
+            <el-button type="primary" @click="toPrint">打印</el-button>
           </el-col>
           <el-col :span="3">
             <el-input
@@ -116,6 +116,17 @@ export default {
         selectList_temp.push(list[i]['Id'])
       }
       this.selectList = selectList_temp
+    },
+    toPrint() {
+      // this.getPdf()
+      if (this.selectList.length !== 0) {
+        this.$router.push({
+          name: 'downGetGoods',
+          params: {
+            data: this.selectList
+          }
+        })
+      }
     }
   }
 }

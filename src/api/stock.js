@@ -85,3 +85,11 @@ export function deleteErpSku(id) {
     method: 'post'
   })
 }
+
+// 扫描入库
+export function scaning(id) {
+  return request({
+    url: '/stock/scanToWarehouse?id=' + id,
+    method: 'post'
+  })
+}

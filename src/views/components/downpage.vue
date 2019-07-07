@@ -1,10 +1,14 @@
 <template>
   <div id="pdfDom" :style="{width: pdfWidth, height: pdfHeght}">
     <div v-for="(item_1, i) in pagedata" :key="i">
-      <div v-for="(item_2, j) in item_1.ErpSkus" :key="j" style="width:445.54px;height:336.16px">
+      <div v-for="(item_2, j) in item_1.ErpSkus" :key="j" style="width:445.54px;height:334px">
         <!-- <div v-for="(item_2, j) in item_1.ErpSkus" :key="j" style="width:556.92px;height:340.16px"> -->
-        <span style="font-size:35px">{{ item_1.SectionNum }}</span>
-        <div style="float:right">
+        <div class="tabLeft">
+          <div style="font-size:35px">{{ item_1.SectionNum }}</div>
+          <div style="font-size:30px">{{ item_2.Color }}</div>
+          <div style="font-size:35px">{{ item_2.Size }}</div>
+        </div>
+        <div class="tabRight">
           <div :id="'qrDom' + i + j" />
           <span style="font-size:35px">{{ item_1.GetGoodsNum }}</span>
         </div>
@@ -74,3 +78,19 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  .tabLeft {
+    width: 97px;
+    margin:16px 18px;
+    float:left;
+    div {
+      margin-top: 10px;
+    }
+  }
+  .tabRight {
+      width: 240px;
+      margin:16px 18px;
+      float:right;
+  }
+</style>
