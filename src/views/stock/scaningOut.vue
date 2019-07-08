@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>扫描入库</span>
+        <span>扫描出库</span>
       </div>
       <el-input ref="scanInput" v-model="goodsInfo" autofocus placeholder="扫码枪输入" style="margin-bottom: 8px;" @keyup.enter.native="addGoods" @blur="getFocus" />
       <div class="tableArea">
@@ -33,7 +33,7 @@
       </div>
       <div class="btnArea">
         <el-row type="flex" center>
-          <el-button style="margin:0 auto;" type="primary" @click="pushScaning">提交</el-button>
+          <el-button style="margin:0 auto;" type="primary" @click="pushScaning">确认入库</el-button>
         </el-row>
       </div>
     </el-card>
@@ -57,7 +57,7 @@ export default {
   },
   methods: {
     addGoods() {
-      const infoDetails = JSON.parse(this.goodsInfo)
+      const infoDetails = JSON.parse(this.goodsInfo.replace('?', ''))
       this.tableData.push(infoDetails)
       this.idList.push(infoDetails.ErpSkuId)
       this.goodsInfo = ''

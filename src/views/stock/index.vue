@@ -19,7 +19,8 @@
         </el-row>
         <el-row style="margin-top:20px;margin-bottom:20px" type="flex" justify="space-around">
           <el-col :span="22">
-            <el-button type="primary" size="medium" @click="handleScaning">扫描入库</el-button>
+            <el-button type="primary" size="medium" @click="handleScaningEnter">入库</el-button>
+            <el-button type="warning" size="medium" @click="handleScaningOut">出库</el-button>
             <el-button type="primary" size="medium" @click="toPrint">打印标签</el-button>
           </el-col>
           <el-col :span="2">
@@ -275,9 +276,14 @@ export default {
       }
       this.selectList = selectList_temp
     },
-    handleScaning() {
+    handleScaningEnter() {
       this.$router.push({
-        name: 'scaning'
+        name: 'scaningEnter'
+      })
+    },
+    handleScaningOut() {
+      this.$router.push({
+        name: 'scaningOut'
       })
     }
   }

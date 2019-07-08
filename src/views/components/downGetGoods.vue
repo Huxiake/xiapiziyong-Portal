@@ -20,7 +20,6 @@
 <script>
 import QRCode from 'qrcodejs2'
 import { getGoodsList } from '@/api/getGoods'
-import { toUtf8 } from '@/utils/toUtf8'
 
 export default {
   data() {

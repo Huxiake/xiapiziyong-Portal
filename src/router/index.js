@@ -48,11 +48,18 @@ export const constantRoutes = [
         meta: { title: '库存管理', icon: 'kucun' }
       },
       {
-        path: 'index/scaning',
-        name: 'scaning',
+        path: 'index/scaningEnter',
+        name: 'scaningEnter',
         hidden: true,
-        component: () => import('@/views/stock/scaning'),
+        component: () => import('@/views/stock/scaningEnter'),
         meta: { title: '扫描入库', icon: 'kucun' }
+      },
+      {
+        path: 'index/scaningOut',
+        name: 'scaningOut',
+        hidden: true,
+        component: () => import('@/views/stock/scaningOut'),
+        meta: { title: '扫描出库', icon: 'kucun' }
       },
       {
         path: 'details/:id',
