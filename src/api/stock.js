@@ -87,9 +87,17 @@ export function deleteErpSku(id) {
 }
 
 // 扫描入库
-export function scaning(id) {
+export function scaningEnter(id) {
   return request({
     url: '/stock/scanToWarehouse?id=' + id,
+    method: 'post'
+  })
+}
+
+// 扫描出库
+export function scaningOut(id) {
+  return request({
+    url: '/stock/scanToSend?id=' + id,
     method: 'post'
   })
 }

@@ -25,8 +25,8 @@
           <el-table-column label="颜色" prop="Color" />
           <el-table-column label="码数" prop="Size" />
           <el-table-column label="" width="50">
-            <template>
-              <el-button type="danger" icon="el-icon-delete" size="small" circle />
+            <template slot-scope="scope">
+              <el-button type="danger" icon="el-icon-delete" size="small" circle @click="deleteInputRow(scope.$index)" />
             </template>
           </el-table-column>
         </el-table>
@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { scaning } from '@/api/stock'
+import { scaningEnter } from '@/api/stock'
 // import qs from 'qs'
 
 export default {
@@ -59,7 +59,7 @@ export default {
     addGoods() {
       const infoDetails = JSON.parse(this.goodsInfo.replace('?', ''))
       this.tableData.push(infoDetails)
-      this.idList.push(infoDetails.ErpSkuId)
+      // this.idList.push(infoDetails.ErpSkuId)
       this.goodsInfo = ''
     },
     getFocus() {
@@ -67,10 +67,23 @@ export default {
         this.$refs.scanInput.$el.children[0].focus()
       })
     },
+    deleteInputRow(index) {
+      this.tableData.splice(index, 1)
+    },
     pushScaning() {
-      const ids = '[' + this.idList.join(',') + ']'
-      scaning(ids).then(res => {
-        console.log(res)
+      if (this.tableData.length === 0) return
+      const ids = '[' + Array.from(this.tableData, item => item.ErpSkuId).join(',') + ']'
+      this.$confirm('是否确认入库', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        scaningEnter(ids).then(res => {
+          if (res.success) {
+            this.$message.success('入库成功!')
+            this.$router.go(-1)
+          }
+        })
       })
     }
   }

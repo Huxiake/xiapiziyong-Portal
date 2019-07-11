@@ -118,14 +118,14 @@ export default {
       this.selectList = selectList_temp
     },
     toPrint() {
-      // this.getPdf()
       if (this.selectList.length !== 0) {
-        this.$router.push({
-          name: 'downGetGoods',
-          params: {
-            data: this.selectList
+        const { href } = this.$router.resolve({
+          path: '/downGetGoods',
+          query: {
+            id: this.selectList.join(',')
           }
         })
+        window.open(href, '_blank')
       }
     }
   }

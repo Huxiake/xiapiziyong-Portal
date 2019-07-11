@@ -1,7 +1,6 @@
 <template>
-  <div id="pdfDom" :style="{width: pdfWidth, height: pdfHeght}">
-    <div v-for="(item_1, i) in pagedata" :key="i">
-      <!-- <div style="width:445.54px;height:336.16px"> -->
+  <div id="pdfDom" v-loading.fullscreen="loading" element-loading-text="标签生成中" :style="{width: pdfWidth, height: pdfHeght}">
+    <div v-for="(item_1, i) in pagedata" :key="i" style="float:left;">
       <div style="width:445.54px;height:334px">
         <div class="tabLeft">
           <div style="font-size:35px">{{ item_1.ErpSku.ErpSpu.SectionNum }}</div>
@@ -24,21 +23,17 @@ import { getGoodsList } from '@/api/getGoods'
 export default {
   data() {
     return {
+      loading: true,
       htmlTitle: new Date(),
       printList: [],
       pagedata: [],
-      pdfWidth: '445.54px',
-      // pdfWidth: '141.73px',
+      pdfWidth: '891.08px',
       pdfHeght: null
     }
   },
   created() {
-    this.printList = '?id=[' + this.$route.params.data.join(',') + ']'
+    this.printList = '[' + this.$route.query.id + ']'
     this.getList()
-    // this.$nextTick(function() {
-    //   this.qrcode()
-    //   this.getPdf()
-    // })
   },
   methods: {
     getList() {
@@ -46,26 +41,18 @@ export default {
         .then(res => {
           if (res.success) {
             this.pagedata = res.data.rows
-            console.log(this.pagedata)
           }
         })
         .finally(() => {
           this.qrcode()
+          this.loading = false
           this.getPdf()
         })
     },
     qrcode() {
-      console.log('this.pagedata', this.pagedata)
       const skuLen = this.pagedata.length
-      // 计算总长度
-      // let skuLen = 0
-      // for (let j = 0; j < spuLen; j++) {
-      //   skuLen = skuLen + this.pagedata[j].ErpSkus.length
-      // }
-      console.log('skuLen', skuLen)
-      this.pdfHeght = 334.16 * skuLen + 'px'
+      this.pdfHeght = (167.08 * (skuLen + 1)) + 'px'
       for (let i = 0; i < skuLen; i++) {
-        // const erpSkusLen = this.pagedata[i].ErpSkus.length
         new QRCode('qrDom' + i, {
           width: 240,
           height: 240,

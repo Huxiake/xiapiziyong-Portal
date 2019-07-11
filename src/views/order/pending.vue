@@ -23,7 +23,16 @@
             <el-button size="medium" @click="handleMarkWaiting">标记待货</el-button>
           </el-col>
           <el-col :span="2">
-            <el-button type="warning" style="float:right" size="medium" @click="1">导入订单</el-button>
+            <el-upload
+              class="upload-demo"
+              action=""
+              style="float:right"
+              :show-file-list="false"
+              :before-upload="beforeXlsUpload"
+              :http-request="uploadXlsFile"
+            >
+              <el-button size="medium" type="warning">导入订单</el-button>
+            </el-upload>
           </el-col>
         </el-row>
       </div>
@@ -95,7 +104,7 @@
 </template>
 
 <script>
-import { orderList, toGetGoodsList, markWaiting } from '@/api/order'
+import { orderList, toGetGoodsList, markWaiting, uploadOrder } from '@/api/order'
 import qs from 'qs'
 
 export default {
@@ -172,10 +181,33 @@ export default {
     tableFormatter(row, column, cellValue) {
       let res = false
       if (cellValue === '') {
-        console.log(row, column)
         res = true
       }
       return res ? '-' : cellValue
+    },
+    beforeXlsUpload(file) {
+      const pattern = /^(\S)*.xlsx/
+      const isXlsx = pattern.test(file.name)
+
+      if (!isXlsx) {
+        this.$message.error('文件只能是 xlsx 格式')
+      }
+      return isXlsx
+    },
+    uploadXlsFile(item) {
+      const fileObj = item.file
+      // FormData 对象
+      const form = new FormData()
+      // 文件对象
+      form.append('file', fileObj)
+      uploadOrder(form).then(res => {
+        if (res.success) {
+          this.$message.success(res.msg)
+          this.getList()
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
     }
   }
 }

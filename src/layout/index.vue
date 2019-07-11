@@ -50,10 +50,10 @@ export default {
     }
   },
   created() {
-    // this.getUnRead()
-    // setInterval(() => {
-    //   this.getUnRead()
-    // }, 30000)
+    this.getUnRead()
+    setInterval(() => {
+      this.getUnRead()
+    }, 30000)
   },
   methods: {
     handleClickOutside() {

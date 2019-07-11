@@ -130,7 +130,7 @@ export const constantRoutes = [
     name: 'downpage',
     hidden: true,
     component: () => import('@/views/components/downpage'),
-    meta: { title: 'downPage', icon: 'fankui' }
+    meta: { title: '库存标签打印', icon: 'fankui' }
   },
 
   {
@@ -138,7 +138,7 @@ export const constantRoutes = [
     name: 'downGetGoods',
     hidden: true,
     component: () => import('@/views/components/downGetGoods'),
-    meta: { title: 'downPage', icon: 'fankui' }
+    meta: { title: '拿货标签打印', icon: 'fankui' }
   },
 
   // 404 page must be placed at the end !!!

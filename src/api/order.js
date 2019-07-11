@@ -23,3 +23,12 @@ export function markWaiting(params) {
     method: 'post'
   })
 }
+
+// order上传模板
+export function uploadOrder(data) {
+  return request({
+    url: '/order/uploadOrder',
+    method: 'post',
+    data: data
+  })
+}

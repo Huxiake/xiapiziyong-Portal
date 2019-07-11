@@ -159,12 +159,13 @@ export default {
     toPrint() {
       // this.getPdf()
       if (this.selectList.length !== 0) {
-        this.$router.push({
-          name: 'downpage',
-          params: {
-            data: this.selectList
+        const { href } = this.$router.resolve({
+          path: '/downpage',
+          query: {
+            id: this.selectList.join(',')
           }
         })
+        window.open(href, '_blank')
       }
     },
     toSectionDetails(row, column, event) {
@@ -193,10 +194,7 @@ export default {
       }).then(() => {
         deleteErpSpu(id).then(res => {
           if (res.success) {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
+            this.$message.success('删除成功!')
             this.getList()
           }
         })
@@ -271,7 +269,6 @@ export default {
     handleSelectionChange(list) {
       const selectList_temp = []
       for (const i in list) {
-        console.log(i)
         selectList_temp.push(list[i]['Id'])
       }
       this.selectList = selectList_temp
