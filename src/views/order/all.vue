@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import { orderList, toGetGoodsList } from '@/api/order'
+import { orderList, toGetGoodsList, deleteOrder } from '@/api/order'
 import qs from 'qs'
 
 export default {
@@ -147,7 +147,18 @@ export default {
       console.log(this.selectList)
     },
     deleteOrder(id) {
-      console.log(id)
+      this.$confirm('此操作将删除该订单, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteOrder(id).then(res => {
+          if (res.success) {
+            this.$message.success('删除成功!')
+            this.getList()
+          }
+        })
+      })
     },
     testchang() {
       console.log(this.pickerDate)
