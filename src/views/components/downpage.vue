@@ -1,15 +1,14 @@
 <template>
   <div style="width: 100%;background-color:#525659">
     <div id="pdfDom" v-loading.fullscreen="loading" element-loading-text="标签生成中" style="margin: 0 auto;background-color:#ffffff" :style="{width: pdfWidth, height: pdfHeght}">
-      <div v-for="(item, i) in pagedata" :key="i" style="float:left;width:445.54px;height:335px">
+      <div v-for="(item, i) in pagedata" :key="i" style="float:left;width:558.34px;height:335px">
         <div class="tabLeft">
-          <div style="font-size:30px">{{ item.SectionNum }}</div>
-          <div style="font-size:30px">{{ item.Color }}</div>
-          <div style="font-size:30px">{{ item.Size }}</div>
+          <div style="width:100%;height:20%;font-size:50px;font-weight:bold">{{ item.SectionNum }}&nbsp;&nbsp;<span style="font-size:52px">{{ item.Size.replace('码', '') }}</span></div>
+          <div style="display:table-cell;width:207px;height:126px;font-size:32px;text-align:center;vertical-align:middle">{{ item.Color }}</div>
+          <div style="width:100%;height:40%;font-size:38px;font-weight:bold;margin-top:8px">{{ item.GetGoodsNum.replace(/\#+/g, `&#10;`).replace(/\*/g, `&nbsp;&nbsp;`) }}</div>
         </div>
         <div class="tabRight">
           <div :id="'qrDom' + i" />
-          <span style="font-size:35px">{{ item.GetGoodsNum }}</span>
         </div>
       </div>
     </div>
@@ -28,8 +27,8 @@ export default {
       printList: [],
       pagedata: [],
       // pdfWidth: '891.08px',
-      pdfWidth: '891.08px',
-      pdfHeght: null
+      pdfWidth: '1116.67px',
+      pdfHeght: ''
     }
   },
   created() {
@@ -59,28 +58,30 @@ export default {
                   Size: skus[j].Size,
                   Id: skus[j].Id
                 }
-                for (let k = 0; k < skus[j].Amount; k++) {
+                for (let k = -1; k < skus[j].Amount; k++) {
                   this.pagedata.push(spu_item)
                 }
               }
             }
+            this.pdfHeght = (167.08 * (this.pagedata.length + 1)) + 'px'
           }
         })
         .finally(() => {
           this.qrcode()
           this.loading = false
-          this.getPdf()
+          // this.getPdf()
         })
     },
     qrcode() {
       // 计算总长度
       const skuLen = this.pagedata.length
-      this.pdfHeght = (167.08 * (skuLen + 1)) + 'px'
+      // this.pdfHeght = (167.08 * (skuLen + 1))
+      // console.log(this.pdfHeght)
       for (let i = 0; i < skuLen; i++) {
         new QRCode('qrDom' + i, {
-          width: 240,
-          height: 240,
-          text: `{"Img":"${this.pagedata[i].Img}","SectionNum":"${this.pagedata[i].SectionNum}","GetGoodsNum":"${this.pagedata[i].GetGoodsNum}","ErpSkuId":"${this.pagedata[i].Id}","Color":"${this.pagedata[i].Color}","Size":"${this.pagedata[i].Size}"}`
+          width: 310,
+          height: 310,
+          text: `{"SectionNum":"${this.pagedata[i].SectionNum}","ErpSkuId":"${this.pagedata[i].Id}","Color":"${this.pagedata[i].Color}","Size":"${this.pagedata[i].Size}"}`
         })
       }
     }
@@ -90,16 +91,17 @@ export default {
 
 <style lang="scss" scoped>
   .tabLeft {
-    width: 97px;
-    margin:16px 18px;
+    width: 208px;
+    height: 315px;
+    margin:10px;
     float:left;
     div {
       margin-top: 10px;
     }
   }
   .tabRight {
-      width: 240px;
-      margin:16px 18px;
+      width: 310px;
+      margin:10px;
       float:right;
   }
 </style>
