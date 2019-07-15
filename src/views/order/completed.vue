@@ -39,7 +39,8 @@
                 <el-table-column label="状态" prop="ErpStatus" align="center">
                   <template slot-scope="subScope">
                     <el-tag v-if="subScope.row.ErpStatus === 'pending'" type="info">未处理</el-tag>
-                    <el-tag v-if="subScope.row.ErpStatus === 'inStock'" type="success">现货</el-tag>
+                    <el-tag v-if="subScope.row.ErpStatus === 'get'" type="success">未处理</el-tag>
+                    <el-tag v-if="subScope.row.ErpStatus === 'fulfilled'" type="success">现货</el-tag>
                     <el-tag v-if="subScope.row.ErpStatus === 'forPickup'" type="danger">待拿货</el-tag>
                   </template>
                 </el-table-column>
@@ -87,7 +88,7 @@ export default {
         offset: 0,
         limit: 20,
         OrderNum: '',
-        ErpStatus: '["complete"]'
+        ErpStatus: '["completed"]'
       },
       selectList: []
     }

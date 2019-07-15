@@ -8,6 +8,7 @@
       <div class="tableArea">
         <el-table
           :data="tableData"
+          max-height="660"
         >
           <el-table-column label="缩略图">
             <template slot-scope="scope">

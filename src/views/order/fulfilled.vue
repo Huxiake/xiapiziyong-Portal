@@ -45,8 +45,14 @@
                 <el-table-column label="状态" prop="ErpStatus" align="center">
                   <template slot-scope="subScope">
                     <el-tag v-if="subScope.row.ErpStatus === 'pending'" type="info">未处理</el-tag>
-                    <el-tag v-if="subScope.row.ErpStatus === 'inStock'" type="success">现货</el-tag>
+                    <el-tag v-if="subScope.row.ErpStatus === 'get'" type="success">未处理</el-tag>
+                    <el-tag v-if="subScope.row.ErpStatus === 'fulfilled'" type="success">现货</el-tag>
                     <el-tag v-if="subScope.row.ErpStatus === 'forPickup'" type="danger">待拿货</el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column label="发货备注" align="center">
+                  <template slot-scope="subScope">
+                    <span v-html="subScope.row.DeliverRemark.replace(',', '</br>')" />
                   </template>
                 </el-table-column>
               </el-table>
@@ -82,7 +88,7 @@
 </template>
 
 <script>
-import { orderList, toGetGoodsList, deleteOrder } from '@/api/order'
+import { orderList, markCompleted, deleteOrder } from '@/api/order'
 import qs from 'qs'
 
 export default {
@@ -116,9 +122,12 @@ export default {
     },
     dealWithOrder() {
       const orderList = 'OrderList=[' + this.selectList.join(',') + ']'
-      toGetGoodsList(orderList)
+      markCompleted(orderList)
         .then(res => {
-          console.log(res)
+          if (res.success) {
+            this.$message.success('标记成功')
+            this.getList()
+          }
         })
         .catch(err => {
           console.log(err)

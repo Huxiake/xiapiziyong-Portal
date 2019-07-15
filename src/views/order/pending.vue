@@ -67,7 +67,6 @@
                 <el-table-column label="发货备注" align="center">
                   <template slot-scope="subScope">
                     <span v-html="subScope.row.DeliverRemark.replace(',', '</br>')" />
-                    <!-- {{ subScope.row.DeliverRemark.replace(/,/g, "<br>") }} -->
                   </template>
                 </el-table-column>
               </el-table>
@@ -167,7 +166,7 @@ export default {
       const orderList = 'OrderList=[' + this.selectList.join(',') + ']'
       markWaiting(orderList).then(res => {
         if (res.success) {
-          this.$message.success('标记待货成功')
+          this.$message.success('标记成功')
           this.getList()
         }
       })
