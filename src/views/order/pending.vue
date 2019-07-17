@@ -23,6 +23,7 @@
             <el-button size="medium" @click="handleMarkWaiting">标记待货</el-button>
           </el-col>
           <el-col :span="2">
+            <el-button size="medium" type="primary" style="font-size:12px;" @click="addOrder">新增</el-button>
             <el-upload
               class="upload-demo"
               action=""
@@ -31,7 +32,7 @@
               :before-upload="beforeXlsUpload"
               :http-request="uploadXlsFile"
             >
-              <el-button size="medium" type="warning">导入订单</el-button>
+              <el-button size="medium" type="warning" style="font-size:12px;">导入</el-button>
             </el-upload>
           </el-col>
         </el-row>
@@ -45,16 +46,43 @@
           <el-table-column type="selection" width="55" />
           <el-table-column type="expand">
             <template slot-scope="scope">
+              <el-row type="flex" justify="end">
+                <el-col :span="1">
+                  <el-button type="primary" size="small" @click="addOrderDetails(scope)">
+                    添加
+                  </el-button>
+                </el-col>
+              </el-row>
               <div class="expand-header">订单明细:</div>
               <el-table
                 :data="scope.row.ErpOrderDetails"
                 header-row-class-name="testStyle"
                 border
               >
-                <el-table-column label="款号" prop="SectionNum" align="center" />
-                <el-table-column label="颜色" prop="Color" align="center" />
-                <el-table-column label="尺码" prop="Size" align="center" />
-                <el-table-column label="数量" prop="Amount" align="center" />
+                <el-table-column label="款号" align="center">
+                  <template slot-scope="subScope">
+                    <el-input v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" v-model="newOrderDetailsInfo.SectionNum" />
+                    <span v-else>{{ subScope.row.SectionNum }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="颜色" align="center">
+                  <template slot-scope="subScope">
+                    <el-input v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" v-model="newOrderDetailsInfo.Color" />
+                    <span v-else>{{ subScope.row.Color }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="尺码" align="center">
+                  <template slot-scope="subScope">
+                    <el-input v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" v-model="newOrderDetailsInfo.Size" />
+                    <span v-else>{{ subScope.row.Size }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="数量" align="center">
+                  <template slot-scope="subScope">
+                    <el-input v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" v-model="newOrderDetailsInfo.Amount" />
+                    <span v-else>{{ subScope.row.Amount }}</span>
+                  </template>
+                </el-table-column>
                 <el-table-column label="状态" prop="ErpStatus" align="center">
                   <template slot-scope="subScope">
                     <el-tag v-if="subScope.row.ErpStatus === 'pending'" type="info">未处理</el-tag>
@@ -67,6 +95,12 @@
                 <el-table-column label="发货备注" align="center">
                   <template slot-scope="subScope">
                     <span v-html="subScope.row.DeliverRemark.replace(',', '</br>')" />
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作" align="center">
+                  <template slot-scope="subScope">
+                    <el-button v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" type="primary" size="small" @click="newOrderDetalisSubmit">保存</el-button>
+                    <el-button v-else size="small" @click="handleDeleteOrderDetails(subScope.row.Id)">删除</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -93,17 +127,41 @@
           </el-table-column>
           <el-table-column label="操作" align="center" width="80">
             <template slot-scope="scope">
-              <el-button type="danger" size="mini" icon="el-icon-delete" circle @click="deleteOrder(scope.row.Id)" />
+              <el-button type="danger" size="mini" icon="el-icon-delete" circle @click="handleDeleteOrder(scope.row.Id)" />
             </template>
           </el-table-column>
         </el-table>
       </div>
     </el-card>
+    <!-- 新增订单 -->
+    <el-dialog title="新增订单" :visible.sync="dialogAddOrderVisible">
+      <el-form :model="newOrderInfo" label-position="right" label-width="100px">
+        <el-form-item label="订单编号">
+          <el-input v-model="newOrderInfo.OrderNum" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="买家公司">
+          <el-input v-model="newOrderInfo.BuyerCompanyName" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="买家名">
+          <el-input v-model="newOrderInfo.BuyerMemberName" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="订单金额">
+          <el-input v-model="newOrderInfo.GoodsRealPrice" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="newOrderInfo.Remark" type="textarea" autocomplete="off" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogAddOrderVisible = false">取 消</el-button>
+        <el-button type="primary" @click="newOrderSubmit">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { orderList, toGetGoodsList, markWaiting, uploadOrder, deleteOrder } from '@/api/order'
+import { orderList, toGetGoodsList, markWaiting, uploadOrder, deleteOrder, addErpOrder, addErpOrderDetails, deleteOrderDetails } from '@/api/order'
 import qs from 'qs'
 
 export default {
@@ -116,6 +174,18 @@ export default {
    */
   data() {
     return {
+      dialogAddOrderVisible: false,
+      newOrderInfo: {},
+      newOrderDetailsInfo: {
+        ErpOrder: {
+          Id: ''
+        },
+        SectionNum: '',
+        Color: '',
+        Size: '',
+        Amount: '',
+        ErpStatus: 'pending'
+      },
       tableData: [],
       paginator: {
         offset: 0,
@@ -174,7 +244,7 @@ export default {
           console.log(e)
         })
     },
-    deleteOrder(id) {
+    handleDeleteOrder(id) {
       this.$confirm('此操作将删除该订单, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -217,6 +287,69 @@ export default {
         } else {
           this.$message.error(res.msg)
         }
+      })
+    },
+    addOrder() {
+      this.dialogAddOrderVisible = true
+    },
+    addOrderDetails(data) {
+      console.log(this.newOrderDetailsInfo)
+      if (this.newOrderDetailsInfo.ErpOrder.Id === '') {
+        this.newOrderDetailsInfo.ErpOrder.Id = data.row.Id
+        console.log(this.newOrderDetailsInfo.Id)
+        const details = {
+          ErpOrder: {
+            Id: data.row.Id
+          },
+          Amount: '',
+          Color: '',
+          Size: '',
+          DeliverRemark: '',
+          new: true
+        }
+        data.row.ErpOrderDetails.push(details)
+      }
+    },
+    newOrderSubmit() {
+      this.newOrderInfo.ErpStatus = 'pending'
+      addErpOrder(this.newOrderInfo).then(res => {
+        if (res.success) {
+          this.dialogAddOrderVisible = false
+          this.newOrderInfo = {}
+          this.$message.success('新增成功！')
+          this.getList()
+        }
+      })
+    },
+    newOrderDetalisSubmit(data) {
+      // this.newOrderInfo.ErpStatus = 'pending'
+      addErpOrderDetails(this.newOrderDetailsInfo).then(res => {
+        if (res.success) {
+          this.newOrderDetailsInfo = {
+            ErpOrder: {
+              Id: ''
+            },
+            SectionNum: '',
+            Color: '',
+            Size: '',
+            Amount: '',
+            ErpStatus: 'pending'
+          }
+          this.$message.success('添加订单详情成功！')
+          this.getList()
+        }
+      })
+    },
+    handleDeleteOrderDetails(Id) {
+      this.$confirm('此操作将删除该订单详情, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteOrderDetails(Id).then(res => {
+          this.$message.success('删除成功!')
+          this.getList()
+        })
       })
     }
   }

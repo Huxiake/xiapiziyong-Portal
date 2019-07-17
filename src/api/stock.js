@@ -61,7 +61,6 @@ export function uploadSpuXls(data) {
 
 // 新增sku信息
 export function addErpSku(data) {
-  console.log(data)
   return request({
     url: '/stock/details/addErpSku',
     method: 'post',

@@ -48,3 +48,37 @@ export function uploadOrder(data) {
     data: data
   })
 }
+
+// 新增订单
+export function addErpOrder(data) {
+  return request({
+    url: '/order/addErpOrder',
+    method: 'post',
+    data: data
+  })
+}
+
+// 新增订单详情
+export function addErpOrderDetails(data) {
+  return request({
+    url: '/order/addErpOrderDetails',
+    method: 'post',
+    data: data
+  })
+}
+
+// 删除订单
+export function deleteOrder(id) {
+  return request({
+    url: '/order/deleteOrder?id=' + id,
+    method: 'post'
+  })
+}
+
+// 删除订单
+export function deleteOrderDetails(id) {
+  return request({
+    url: '/order/deleteOrderDetails?id=' + id,
+    method: 'post'
+  })
+}
