@@ -54,6 +54,16 @@
               <div>{{ scope.row.ErpSku.ErpSpu.GetGoodsNum }}</div>
             </template>
           </el-table-column>
+          <el-table-column label="颜色" align="center">
+            <template slot-scope="scope">
+              <div>{{ scope.row.ErpSku.Color }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column label="码数" align="center">
+            <template slot-scope="scope">
+              <div>{{ scope.row.ErpSku.Size }}</div>
+            </template>
+          </el-table-column>
           <el-table-column label="价格" align="center">
             <template slot-scope="scope">
               <div>{{ scope.row.ErpSku.ErpSpu.Price }}</div>
@@ -68,7 +78,7 @@
               <el-tag v-if="scope.row.IsGet === 1" type="success">已拿货</el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="操作" prop="" align="center" />
+          <!-- <el-table-column label="操作" prop="" align="center" /> -->
         </el-table>
       </div>
     </el-card>

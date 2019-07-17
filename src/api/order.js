@@ -32,14 +32,6 @@ export function markCompleted(params) {
   })
 }
 
-// order删除订单
-export function deleteOrder(id) {
-  return request({
-    url: '/order/deleteOrder?id=' + id,
-    method: 'post'
-  })
-}
-
 // order上传模板
 export function uploadOrder(data) {
   return request({
