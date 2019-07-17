@@ -24,6 +24,22 @@ export function markWaiting(params) {
   })
 }
 
+// order标记完成拣货
+export function markCompleted(params) {
+  return request({
+    url: '/order/markCompleted?' + params,
+    method: 'post'
+  })
+}
+
+// order删除订单
+export function deleteOrder(id) {
+  return request({
+    url: '/order/deleteOrder?id=' + id,
+    method: 'post'
+  })
+}
+
 // order上传模板
 export function uploadOrder(data) {
   return request({
