@@ -58,7 +58,8 @@ export default {
   },
   methods: {
     addGoods() {
-      const infoDetails = JSON.parse(this.goodsInfo.replace('?', ''))
+      const goodsInfoStr = this.goodsInfo.replace('?', '').replace('“', '"').replace('”', '"').replace('，', ',').replace('｛', '{').replace('｝', '}')
+      const infoDetails = JSON.parse(goodsInfoStr)
       this.tableData.push(infoDetails)
       this.idList.push(infoDetails.ErpSkuId)
       this.goodsInfo = ''
@@ -74,20 +75,11 @@ export default {
     pushScaning() {
       if (this.tableData.length === 0) return
       const ids = '[' + Array.from(this.tableData, item => item.ErpSkuId).join(',') + ']'
-      this.$confirm('是否确认出库', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        scaningOut(ids).then(res => {
-          if (res.success) {
-            this.$message.success('出库成功!')
-            this.$router.go(-1)
-          }
-        })
-      })
       scaningOut(ids).then(res => {
-        console.log(res)
+        if (res.success) {
+          this.$message.success('出库成功!')
+          this.$router.go(-1)
+        }
       })
     }
   }

@@ -68,6 +68,15 @@ export function addErpSku(data) {
   })
 }
 
+// 新增spu信息
+export function addErpSpu(data) {
+  return request({
+    url: '/stock/addErpSpu',
+    method: 'post',
+    data: data
+  })
+}
+
 // 修改sku信息
 export function updateErpSku(data) {
   return request({

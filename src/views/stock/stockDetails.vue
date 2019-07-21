@@ -91,7 +91,8 @@ export default {
         'Id': null,
         'Color': '',
         'Size': '',
-        'Amount': ''
+        'Amount': '',
+        'SectionNum': ''
       }
     }
   },
@@ -105,14 +106,13 @@ export default {
         if (res.success) {
           this.sectionData = res.data.rows
           this.detailsData = res.data.rows.ErpSkus
-          console.log(this.detailsData)
         }
       })
     },
     handleNewSku() {
       const ErpSpu_temp = this.sectionData
       delete ErpSpu_temp.ErpSkus
-      this.editSkuInfo = { Id: '1', ErpSpu: this.sectionData }
+      this.editSkuInfo = { Id: '1', ErpSpu: this.sectionData, SectionNum: this.sectionData.SectionNum }
       this.detailsData.push(this.editSkuInfo)
     },
     handleSkuEdit(item) {

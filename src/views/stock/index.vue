@@ -24,6 +24,7 @@
             <el-button type="primary" size="medium" @click="toPrint">打印标签</el-button>
           </el-col>
           <el-col :span="2">
+            <el-button size="medium" type="primary" style="font-size:12px;" @click="handleSpuAdd">新增</el-button>
             <el-upload
               class="upload-demo"
               action=""
@@ -32,7 +33,7 @@
               :before-upload="beforeXlsUpload"
               :http-request="uploadXlsFile"
             >
-              <el-button size="medium" type="warning">上传款式</el-button>
+              <el-button size="medium" type="warning" style="font-size:12px;">上传</el-button>
             </el-upload>
           </el-col>
         </el-row>
@@ -110,17 +111,56 @@
         <el-button type="primary" @click="editSubmit">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 新增spu的dialog -->
+    <el-dialog title="新增款式" :visible.sync="dialogAddVisible">
+      <el-form :model="addSpuInfo" label-position="right" label-width="100px">
+        <el-form-item label="图片">
+          <el-upload
+            ref="spuImgUpload"
+            class="avatar-uploader"
+            action=""
+            :show-file-list="false"
+            :auto-upload="false"
+            :on-change="handleImgChange"
+            :http-request="uploadImgFile"
+          >
+            <img v-if="imageUrl_temp" :src="imageUrl_temp" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon" />
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="标题">
+          <el-input v-model="addSpuInfo.Name" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="款号">
+          <el-input v-model="addSpuInfo.SectionNum" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="拿货编号">
+          <el-input v-model="addSpuInfo.GetGoodsNum" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="价格">
+          <el-input v-model="addSpuInfo.Price" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="addSpuInfo.Remark" type="textarea" autocomplete="off" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogAddVisible = false;addSpuInfo = {}">取 消</el-button>
+        <el-button type="primary" @click="addSubmit">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { stockList, uploadSpuXls, uploadSpuPic, updateErpSpu, deleteErpSpu } from '@/api/stock'
+import { stockList, uploadSpuXls, uploadSpuPic, updateErpSpu, deleteErpSpu, addErpSpu } from '@/api/stock'
 import qs from 'qs'
 
 export default {
   data() {
     return {
       dialogEditVisible: false,
+      dialogAddVisible: false,
       parmas: {
         first: ''
       },
@@ -128,6 +168,14 @@ export default {
       editSpuInfo: {
         Id:	'',
         Status: '',
+        SectionNum: '',
+        Name: '',
+        Img: '',
+        GetGoodsNum: '',
+        Price: '',
+        Remark: ''
+      },
+      addSpuInfo: {
         SectionNum: '',
         Name: '',
         Img: '',
@@ -246,7 +294,7 @@ export default {
       // 文件对象
       form.append('img', fileObj)
       form.append('size', fileObj.size)
-      form.append('sectionNum', this.editSpuInfo.SectionNum)
+      form.append('sectionNum', this.dialogEditVisible ? this.editSpuInfo.SectionNum : this.addSpuInfo.SectionNum)
       uploadSpuPic(form).then(res => {
         if (!res.success) {
           this.$message.error('图片上传失败')
@@ -281,6 +329,23 @@ export default {
     handleScaningOut() {
       this.$router.push({
         name: 'scaningOut'
+      })
+    },
+    handleSpuAdd() {
+      this.dialogAddVisible = true
+    },
+    addSubmit() {
+      this.dialogAddVisible = false
+      this.addSpuInfo.Img = 'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/' + this.addSpuInfo.SectionNum + '.jpg'
+      addErpSpu(this.addSpuInfo).then(res => {
+        if (res.success) {
+          this.$refs.spuImgUpload.submit()
+          this.$message.success('新增款式成功')
+          this.getList()
+          this.addSpuInfo = {}
+        } else {
+          this.$message.error('新增款式失败，请稍后重试')
+        }
       })
     }
   }
