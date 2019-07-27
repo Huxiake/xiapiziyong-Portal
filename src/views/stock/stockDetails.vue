@@ -30,15 +30,16 @@
                 <el-tag type="info" size="small">{{ sectionData.GetGoodsNum }}</el-tag>
               </el-form-item>
               <el-form-item label="备注：">
-                <el-tag type="info" size="small">{{ sectionData.remark }}</el-tag>
+                <el-tag type="info" size="small">{{ sectionData.remark ? sectionData.remark : '-' }}</el-tag>
               </el-form-item>
             </el-form>
           </el-col>
         </el-row>
         <el-row>
-          <!-- 新增按钮 -->
-          <el-col :span="1" :offset="23">
-            <el-button type="warning" @click="handleNewSku">新增</el-button>
+          <!-- 按钮 -->
+          <el-col :xs="{ span:10, offset:14}" :sm="{ span:6, offset:20}" :md="{ span:13}" :lg="{span:4, offset:21}" :xl="{span:3, offset:22}">
+            <el-button type="primary" size="small" @click="handlePrint(0)">打印全部</el-button>
+            <el-button type="warning" size="small" @click="handleNewSku">新增</el-button>
           </el-col>
         </el-row>
       </div>
@@ -68,6 +69,18 @@
               <el-button v-if="scope.row.Id === editSkuInfo.Id" size="mini" @click="cancelSkuSave()">取消</el-button>
               <el-button v-if="scope.row.Id !== editSkuInfo.Id" type="primary" size="mini" @click="handleSkuEdit(scope.row)">编辑</el-button>
               <el-button v-if="scope.row.Id !== editSkuInfo.Id" size="mini" @click="handleSkuDelete(scope.row.Id)">删除</el-button>
+              <el-popover
+                :value="printVisible"
+                placement="top"
+                width="160"
+              >
+                <p>打印份数：</p>
+                <el-input-number v-model="printNum" size="mini" style="width:106px;margin:14px;margin-top:0px" />
+                <div style="text-align: right; margin: 0">
+                  <el-button type="primary" size="mini" @click="handlePrint(scope.row.Id)">打印</el-button>
+                </div>
+                <el-button slot="reference" size="mini" icon="el-icon-printer" />
+              </el-popover>
             </template>
           </el-table-column>
         </el-table>
@@ -93,7 +106,10 @@ export default {
         'Size': '',
         'Amount': '',
         'SectionNum': ''
-      }
+      },
+      printVisible: false,
+      visible: false,
+      printNum: 0
     }
   },
   created() {
@@ -166,6 +182,29 @@ export default {
         this.editSkuInfo = {}
       } else {
         this.editSkuInfo = {}
+      }
+    },
+    handlePrint(id) {
+      if (id !== 0) {
+        console.log('print', id)
+        const { href } = this.$router.resolve({
+          path: '/downpage',
+          query: {
+            id: this.sectionId,
+            num: this.printNum,
+            skuId: id
+          }
+        })
+        window.open(href, '_blank')
+        this.printNum = 0
+      } else {
+        const { href } = this.$router.resolve({
+          path: '/downpage',
+          query: {
+            id: this.sectionId
+          }
+        })
+        window.open(href, '_blank')
       }
     }
   }

@@ -186,7 +186,7 @@ export default {
       stockData: [],
       paginator: {
         offset: 0,
-        limit: 20,
+        limit: 200,
         SectionNum: ''
       },
       selectList: []

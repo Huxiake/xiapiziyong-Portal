@@ -74,3 +74,11 @@ export function deleteOrderDetails(id) {
     method: 'post'
   })
 }
+
+// 删除订单
+export function getSkuInfoBySectionNum(SectionNum) {
+  return request({
+    url: '/order/getSkuInfoBySectionNum?SectionNum=' + SectionNum,
+    method: 'get'
+  })
+}

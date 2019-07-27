@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%;background-color:#525659">
     <div id="pdfDom" v-loading.fullscreen="loading" element-loading-text="标签生成中" style="margin: 0 auto;background-color:#ffffff" :style="{width: pdfWidth, height: pdfHeght}">
-      <div v-for="(item, i) in pagedata" :key="i" style="float:left;width:558.34px;height:335px">
+      <div v-for="(item, i) in pagedata" :key="i" style="float:left;height:335px" :style="{width: Math.ceil(i%2) === 0 ? 591.84 : 558.34}">
         <div class="tabLeft">
           <div style="width:100%;height:20%;font-size:50px;font-weight:bold">{{ item.SectionNum }}&nbsp;&nbsp;<span style="font-size:52px">{{ item.Size.replace('码', '') }}</span></div>
           <div style="display:table-cell;width:207px;height:126px;font-size:32px;text-align:center;vertical-align:middle">{{ item.Color }}</div>
@@ -10,6 +10,7 @@
         <div class="tabRight">
           <div :id="'qrDom' + i" />
         </div>
+        <div v-if="Math.ceil(i%2) === 0" style="height:335px;width:33.5px;float:right" />
       </div>
     </div>
   </div>
@@ -25,14 +26,18 @@ export default {
       loading: true,
       htmlTitle: new Date(),
       printList: [],
+      printNum: 0,
+      skuId: null,
       pagedata: [],
       // pdfWidth: '891.08px',
-      pdfWidth: '1116.67px',
+      pdfWidth: '1150.17px',
       pdfHeght: ''
     }
   },
   created() {
     this.printList = '[' + this.$route.query.id + ']'
+    this.printNum = this.$route.query.num
+    this.skuId = this.$route.query.skuId
     this.getList()
   },
   methods: {
@@ -40,7 +45,6 @@ export default {
       getPrintList(this.printList)
         .then(res => {
           if (res.success) {
-            // this.pagedata = res.data.rows
             const spu = res.data.rows
             // 处理data
             const spuLen = spu.length
@@ -48,7 +52,7 @@ export default {
               const skus = spu[i].ErpSkus
               const skuLen = skus.length
               for (let j = 0; j < skuLen; j++) {
-                const spu_item = {
+                const sku_item = {
                   Img: spu[i].Img,
                   Price: spu[i].Price,
                   SectionNum: spu[i].SectionNum,
@@ -56,10 +60,18 @@ export default {
                   GetGoodsNum: spu[i].GetGoodsNum,
                   Color: skus[j].Color,
                   Size: skus[j].Size,
-                  Id: skus[j].Id
+                  skuId: skus[j].Id
                 }
-                for (let k = -1; k < skus[j].Amount; k++) {
-                  this.pagedata.push(spu_item)
+                if (typeof (this.printNum) !== 'undefined') {
+                  if (sku_item.skuId === Number(this.skuId)) {
+                    for (let k = 0; k < this.printNum; k++) {
+                      this.pagedata.push(sku_item)
+                    }
+                  }
+                } else {
+                  for (let k = -1; k < skus[j].Amount; k++) {
+                    this.pagedata.push(sku_item)
+                  }
                 }
               }
             }
@@ -69,19 +81,16 @@ export default {
         .finally(() => {
           this.qrcode()
           this.loading = false
-          // this.getPdf()
         })
     },
     qrcode() {
       // 计算总长度
       const skuLen = this.pagedata.length
-      // this.pdfHeght = (167.08 * (skuLen + 1))
-      // console.log(this.pdfHeght)
       for (let i = 0; i < skuLen; i++) {
         new QRCode('qrDom' + i, {
           width: 310,
           height: 310,
-          text: `{"SectionNum":"${this.pagedata[i].SectionNum}","ErpSkuId":"${this.pagedata[i].Id}","Color":"${this.pagedata[i].Color}","Size":"${this.pagedata[i].Size}"}`
+          text: `{"SectionNum":"${this.pagedata[i].SectionNum}","ErpSkuId":"${this.pagedata[i].skuId}","Color":"${this.pagedata[i].Color}","Size":"${this.pagedata[i].Size}"}`
         })
       }
     }
@@ -102,6 +111,6 @@ export default {
   .tabRight {
       width: 310px;
       margin:10px;
-      float:right;
+      float:left;
   }
 </style>

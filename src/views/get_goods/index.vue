@@ -5,18 +5,26 @@
         <span>拿货列表</span>
       </div>
       <div class="box-tools">
-        <el-row :gutter="16" type="flex" justify="right">
-          <el-col :span="20">
+        <el-row :gutter="8" type="flex" justify="right">
+          <el-col :span="17">
             <el-button type="primary" @click="toPrint">打印</el-button>
           </el-col>
-          <el-col :span="3">
+          <el-col :span="2">
+            <el-select v-model="paginator.GoodsStatus" placeholder="拿货状态">
+              <el-option label="全部" value="" />
+              <el-option label="待拿货" value="Pending" />
+              <el-option label="已拿货" value="Get" />
+              <el-option label="缺货" value="Lack" />
+            </el-select>
+          </el-col>
+          <el-col :span="4">
             <el-input
               v-model="paginator.OrderNum"
-              placeholder="请输入订单号"
+              placeholder="输入订单号可查询"
             />
           </el-col>
           <el-col :span="1.5">
-            <el-button type="primary" @click="1">查询</el-button>
+            <el-button type="primary" @click="getList">查询</el-button>
           </el-col>
         </el-row>
       </div>
@@ -96,7 +104,8 @@ export default {
       paginator: {
         offset: 0,
         limit: 20,
-        OrderNum: ''
+        OrderNum: '',
+        GoodsStatus: ''
       },
       selectList: []
     }

@@ -5,8 +5,9 @@
         <span>待处理订单</span>
       </div>
       <div class="box-tools">
-        <el-row :gutter="16" type="flex" justify="right">
-          <el-col :span="3" :offset="20">
+        <el-row :gutter="4" type="flex" justify="end">
+          <!-- <el-col :span="4" :offset="20"> -->
+          <el-col :span="4">
             <el-input
               v-model="paginator.OrderNum"
               size="medium"
@@ -17,8 +18,8 @@
             <el-button type="primary" size="medium" @click="getList">查询</el-button>
           </el-col>
         </el-row>
-        <el-row style="margin-top:20px;margin-bottom:20px">
-          <el-col :span="22">
+        <el-row :gutter="4" style="margin-top:20px;margin-bottom:20px" type="flex" justify="space-between">
+          <el-col :span="4">
             <el-button type="primary" size="medium" @click="dealWithOrder">配货</el-button>
             <el-button size="medium" @click="handleMarkWaiting">标记待货</el-button>
           </el-col>
@@ -61,19 +62,35 @@
               >
                 <el-table-column label="款号" align="center">
                   <template slot-scope="subScope">
-                    <el-input v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" v-model="newOrderDetailsInfo.SectionNum" />
+                    <el-input v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" v-model="newOrderDetailsInfo.SectionNum" @change="changeSectionNum" />
                     <span v-else>{{ subScope.row.SectionNum }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="颜色" align="center">
                   <template slot-scope="subScope">
-                    <el-input v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" v-model="newOrderDetailsInfo.Color" />
+                    <!-- <el-input v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" v-model="newOrderDetailsInfo.Color" /> -->
+                    <el-select v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" v-model="newOrderDetailsInfo.Color" filterable placeholder="请选择">
+                      <el-option
+                        v-for="item in Object.keys(skuInfo)"
+                        :key="item"
+                        :label="item"
+                        :value="item"
+                      />
+                    </el-select>
                     <span v-else>{{ subScope.row.Color }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="尺码" align="center">
                   <template slot-scope="subScope">
-                    <el-input v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" v-model="newOrderDetailsInfo.Size" />
+                    <!-- <el-input v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" v-model="newOrderDetailsInfo.Size" /> -->
+                    <el-select v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" v-model="newOrderDetailsInfo.Size" filterable placeholder="请选择">
+                      <el-option
+                        v-for="item in skuInfo[newOrderDetailsInfo.Color]"
+                        :key="item"
+                        :label="item"
+                        :value="item"
+                      />
+                    </el-select>
                     <span v-else>{{ subScope.row.Size }}</span>
                   </template>
                 </el-table-column>
@@ -161,7 +178,7 @@
 </template>
 
 <script>
-import { orderList, toGetGoodsList, markWaiting, uploadOrder, deleteOrder, addErpOrder, addErpOrderDetails, deleteOrderDetails } from '@/api/order'
+import { orderList, toGetGoodsList, markWaiting, uploadOrder, deleteOrder, addErpOrder, addErpOrderDetails, deleteOrderDetails, getSkuInfoBySectionNum } from '@/api/order'
 import qs from 'qs'
 
 export default {
@@ -193,7 +210,8 @@ export default {
         OrderNum: '',
         ErpStatus: '["pending","waiting","forPickup"]'
       },
-      selectList: []
+      selectList: [],
+      skuInfo: {}
     }
   },
   created() {
@@ -218,7 +236,6 @@ export default {
         .then(res => {
           this.$message.success('配货成功！等待拿货')
           this.getList()
-          console.log(res)
         })
         .catch(err => {
           console.log(err)
@@ -293,10 +310,8 @@ export default {
       this.dialogAddOrderVisible = true
     },
     addOrderDetails(data) {
-      console.log(this.newOrderDetailsInfo)
       if (this.newOrderDetailsInfo.ErpOrder.Id === '') {
         this.newOrderDetailsInfo.ErpOrder.Id = data.row.Id
-        console.log(this.newOrderDetailsInfo.Id)
         const details = {
           ErpOrder: {
             Id: data.row.Id
@@ -319,9 +334,11 @@ export default {
           this.$message.success('新增成功！')
           this.getList()
         }
+      }).catch(e => {
+        console.log(e)
       })
     },
-    newOrderDetalisSubmit(data) {
+    newOrderDetalisSubmit() {
       // this.newOrderInfo.ErpStatus = 'pending'
       addErpOrderDetails(this.newOrderDetailsInfo).then(res => {
         if (res.success) {
@@ -338,6 +355,8 @@ export default {
           this.$message.success('添加订单详情成功！')
           this.getList()
         }
+      }).catch(e => {
+        console.log(e)
       })
     },
     handleDeleteOrderDetails(Id) {
@@ -350,6 +369,30 @@ export default {
           this.$message.success('删除成功!')
           this.getList()
         })
+      })
+    },
+    changeSectionNum(sNum) {
+      getSkuInfoBySectionNum(sNum).then(res => {
+        if (res.success) {
+          const data = res.data.rows
+          const temp_skuInfo = {}
+          for (let i = 0; i < data.length; i++) {
+            temp_skuInfo[data[i].Color] = []
+            // const item = {}
+            // item.color = data[i].Color
+            // item.size = []
+            for (let j = 0; j < data.length; j++) {
+              if (data[j].Color === data[i].Color) {
+                temp_skuInfo[data[i].Color].push(data[j].Size)
+                // item.size.push(data[j].Size)
+              }
+            }
+          }
+          this.skuInfo = temp_skuInfo
+        }
+        console.log(this.skuInfo)
+      }).catch(e => {
+        console.log(e)
       })
     }
   }

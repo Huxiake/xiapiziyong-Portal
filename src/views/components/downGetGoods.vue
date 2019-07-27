@@ -1,30 +1,16 @@
 <template>
-  <!-- <div id="pdfDom" v-loading.fullscreen="loading" element-loading-text="标签生成中" :style="{width: pdfWidth, height: pdfHeght}">
-    <div v-for="(item_1, i) in pagedata" :key="i" style="float:left;">
-      <div style="width:445.54px;height:334px">
-        <div class="tabLeft">
-          <div style="font-size:35px">{{ item_1.ErpSku.ErpSpu.SectionNum }}</div>
-          <div style="font-size:30px">{{ item_1.ErpSku.Color }}</div>
-          <div style="font-size:35px">{{ item_1.ErpSku.Size }}</div>
-        </div>
-        <div class="tabRight">
-          <div :id="'qrDom' + i" />
-          <span style="font-size:35px">{{ item_1.GetGoodsNum }}</span>
-        </div>
-      </div>
-    </div>
-  </div> -->
   <div style="width: 100%;background-color:#525659">
     <div id="pdfDom" v-loading.fullscreen="loading" element-loading-text="标签生成中" style="margin: 0 auto;background-color:#ffffff" :style="{width: pdfWidth, height: pdfHeght}">
-      <div v-for="(item, i) in pagedata" :key="i" style="float:left;width:558.34px;height:335px">
+      <div v-for="(item, i) in pagedata" :key="i" style="float:left;height:335px" :style="{width: Math.ceil(i%2) === 0 ? 591.84 : 558.34}">
         <div class="tabLeft">
-          <div style="width:100%;height:20%;font-size:50px;font-weight:bold">{{ item.ErpSku.ErpSpu.SectionNum }}&nbsp;&nbsp;<span style="font-size:52px">{{ item.ErpSku.Size.replace('码', '') }}</span></div>
+          <div style="width:100%;height:20%;font-size:44px;font-weight:bold;margin-left:22px;">{{ item.ErpSku.ErpSpu.SectionNum }}&nbsp;<span style="font-size:40px;font-weight:100">{{ item.ErpSku.Size.replace('码', '') }}</span></div>
           <div style="display:table-cell;width:207px;height:126px;font-size:32px;text-align:center;vertical-align:middle">{{ item.ErpSku.Color }}</div>
-          <div style="width:100%;height:40%;font-size:38px;font-weight:bold;margin-top:8px">{{ item.GetGoodsNum.replace(/\#+/g, `&#10;`).replace(/\*/g, `&nbsp;&nbsp;`) }}</div>
+          <div style="width:100%;height:40%;font-size:38px;font-weight:bold;margin-top:8px;margin-left:22px;">{{ item.GetGoodsNum.replace(/\#+/g, `&#10;`).replace(/\*/g, `&nbsp;&nbsp;`) }}</div>
         </div>
         <div class="tabRight">
           <div :id="'qrDom' + i" />
         </div>
+        <div v-if="Math.ceil(i%2) === 0" style="height:335px;width:33.5px;float:right" />
       </div>
     </div>
   </div>
@@ -41,7 +27,7 @@ export default {
       htmlTitle: new Date(),
       printList: [],
       pagedata: [],
-      pdfWidth: '1116.67px',
+      pdfWidth: '1150.17px',
       pdfHeght: ''
     }
   },
@@ -93,6 +79,6 @@ export default {
   .tabRight {
       width: 310px;
       margin:10px;
-      float:right;
+      float:left;
   }
 </style>
