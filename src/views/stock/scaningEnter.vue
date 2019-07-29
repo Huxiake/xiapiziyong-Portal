@@ -17,8 +17,8 @@
                 width="326"
                 trigger="hover"
               >
-                <img :src="'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/' + scope.row.SectionNum + '.jpg?x-oss-process=image/resize,h_300,limit_0'" style="margin:0 auto">
-                <img slot="reference" :src="'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/' + scope.row.SectionNum + '.jpg?x-oss-process=image/resize,h_58'">
+                <img :src="'https://xiapiziyong-pic.oss-cn-shenzhen.aliyuncs.com/' + scope.row.SectionNum + '.jpg?x-oss-process=image/resize,h_300,limit_0'" style="margin:0 auto">
+                <img slot="reference" :src="'https://xiapiziyong-pic.oss-cn-shenzhen.aliyuncs.com/' + scope.row.SectionNum + '.jpg?x-oss-process=image/resize,h_58'">
               </el-popover>
             </template>
           </el-table-column>

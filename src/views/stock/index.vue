@@ -21,7 +21,7 @@
           <el-col :span="22">
             <el-button type="primary" size="medium" @click="handleScaningEnter">入库</el-button>
             <el-button type="warning" size="medium" @click="handleScaningOut">出库</el-button>
-            <el-button type="primary" size="medium" @click="toPrint">打印标签</el-button>
+            <!-- <el-button type="primary" size="medium" @click="toPrint">打印标签</el-button> -->
           </el-col>
           <el-col :span="2">
             <el-button size="medium" type="primary" style="font-size:12px;" @click="handleSpuAdd">新增</el-button>
@@ -39,6 +39,15 @@
         </el-row>
       </div>
       <div class="box-table">
+        <el-pagination
+          :current-page="paginatorInfo.currentPage + 1"
+          :page-size="paginator.limit"
+          :total="paginatorInfo.totalCount"
+          layout="prev, pager, next"
+          style="margin-bottom:10px;float:right"
+          @current-change="handleCurrentChange"
+          @size-change="handleSizeChange"
+        />
         <!-- spu列表 -->
         <el-table
           :data="stockData"
@@ -54,8 +63,8 @@
                 width="326"
                 trigger="hover"
               >
-                <img :src="scope.row.Img + '?x-oss-process=image/resize,h_300,limit_0'" style="margin:0 auto">
-                <img slot="reference" :src="scope.row.Img + '?x-oss-process=image/resize,h_58'">
+                <img :src="scope.row.Img + '?x-oss-process=image/resize,h_300,limit_0'" style="margin:0 auto;width:300px;height:300px">
+                <img slot="reference" :src="scope.row.Img + '?x-oss-process=image/resize,h_58'" style="width:58px;height:58px">
               </el-popover>
             </template>
           </el-table-column>
@@ -71,6 +80,16 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-pagination
+          :current-page="paginatorInfo.currentPage + 1"
+          :page-sizes="[50, 100, 200, 300, 400]"
+          :page-size="paginator.limit"
+          :total="paginatorInfo.totalCount"
+          layout="total, sizes, prev, pager, next, jumper"
+          style="margin-top:20px;float:right"
+          @current-change="handleCurrentChange"
+          @size-change="handleSizeChange"
+        />
       </div>
     </el-card>
     <!-- 编辑spu的dialog -->
@@ -186,10 +205,11 @@ export default {
       stockData: [],
       paginator: {
         offset: 0,
-        limit: 200,
+        limit: 50,
         SectionNum: ''
       },
-      selectList: []
+      selectList: [],
+      paginatorInfo: {}
     }
   },
   created() {
@@ -201,6 +221,7 @@ export default {
       stockList(searchAttrs).then(res => {
         if (res.success) {
           this.stockData = res.data.rows
+          this.paginatorInfo = res.data.paginator
         }
       })
     },
@@ -303,7 +324,7 @@ export default {
     },
     editSubmit() { // 提交修改
       this.dialogEditVisible = false
-      this.editSpuInfo.Img = 'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/' + this.editSpuInfo.SectionNum + '.jpg'
+      this.editSpuInfo.Img = 'https://xiapiziyong-pic.oss-cn-shenzhen.aliyuncs.com/' + this.editSpuInfo.SectionNum + '.jpg'
       updateErpSpu(this.editSpuInfo).then(res => {
         if (res.success) {
           this.$refs.spuImgUpload.submit()
@@ -336,7 +357,7 @@ export default {
     },
     addSubmit() {
       this.dialogAddVisible = false
-      this.addSpuInfo.Img = 'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/' + this.addSpuInfo.SectionNum + '.jpg'
+      this.addSpuInfo.Img = 'https://xiapiziyong-pic.oss-cn-shenzhen.aliyuncs.com/' + this.addSpuInfo.SectionNum + '.jpg'
       addErpSpu(this.addSpuInfo).then(res => {
         if (res.success) {
           this.$refs.spuImgUpload.submit()
@@ -347,6 +368,16 @@ export default {
           this.$message.error('新增款式失败，请稍后重试')
         }
       })
+    },
+    // 分页下一页
+    handleCurrentChange() {
+      this.paginator.offset++
+      this.getList()
+    },
+    // 分页size改变
+    handleSizeChange(val) {
+      this.paginator.limit = val
+      this.getList()
     }
   }
 }

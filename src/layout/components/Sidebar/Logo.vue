@@ -26,7 +26,7 @@ export default {
   data() {
     return {
       title: 'OneKey',
-      logo: 'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/ERP-logo.png'
+      logo: 'https://xiapiziyong-pic.oss-cn-shenzhen.aliyuncs.com/ERP-logo.png'
     }
   }
 }

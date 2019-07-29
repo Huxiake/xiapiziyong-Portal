@@ -50,10 +50,10 @@ export default {
     }
   },
   created() {
-    this.getUnRead()
-    setInterval(() => {
-      this.getUnRead()
-    }, 30000)
+    // this.getUnRead()
+    // setInterval(() => {
+    //   this.getUnRead()
+    // }, 30000)
   },
   methods: {
     handleClickOutside() {
@@ -74,11 +74,11 @@ export default {
     sendNotice() {
       const notice = new Notification('未读的缺货反馈', {
         body: '有' + this.newNotice.length + '条未读的缺货反馈，请及时处理！',
-        icon: 'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/logo.jpg'
+        icon: 'https://xiapiziyong-pic.oss-cn-shenzhen.aliyuncs.com/logo.jpg'
       })
       this.$nextTick(() => {
         if (typeof (this.$refs.sound) !== 'undefined') {
-          this.$refs.sound.src = 'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/8407.mp3'
+          this.$refs.sound.src = 'https://xiapiziyong-pic.oss-cn-shenzhen.aliyuncs.com/8407.mp3'
         }
       })
       console.log(notice)
