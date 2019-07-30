@@ -176,9 +176,7 @@ export default {
     },
     cancelSkuSave() {
       if (this.editSkuInfo.Id === '1') {
-        console.log(this.detailsData)
         this.detailsData = this.detailsData.slice(0, -1)
-        console.log(this.detailsData)
         this.editSkuInfo = {}
       } else {
         this.editSkuInfo = {}

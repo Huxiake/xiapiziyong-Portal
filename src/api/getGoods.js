@@ -31,3 +31,11 @@ export function dealFeedback(params) {
     method: 'post'
   })
 }
+
+// 处理反馈
+export function editGetGoodsInfo(params) {
+  return request({
+    url: '/getgoods/editGetGoodsInfo?' + params,
+    method: 'post'
+  })
+}

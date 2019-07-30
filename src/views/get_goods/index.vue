@@ -34,16 +34,16 @@
           stripe
           @selection-change="handleSelectionChange"
         >
-          <el-table-column type="selection" width="55" />
-          <el-table-column label="缩略图" align="center">
+          <el-table-column type="selection" width="40" />
+          <el-table-column label="缩略图" align="center" width="80">
             <template slot-scope="scope">
               <el-popover
                 placement="right-start"
                 width="326"
                 trigger="hover"
               >
-                <img :src="scope.row.ErpSku.ErpSpu.Img + '?x-oss-process=image/resize,h_300,limit_0'" style="margin:0 auto">
-                <img slot="reference" :src="scope.row.ErpSku.ErpSpu.Img + '?x-oss-process=image/resize,h_58'">
+                <img :src="scope.row.ErpSku.ErpSpu.Img" style="margin:0 auto;width:300px;height:300px">
+                <img slot="reference" :src="scope.row.ErpSku.ErpSpu.Img" style="width:58px;height:58px">
               </el-popover>
             </template>
           </el-table-column>
@@ -59,34 +59,44 @@
           </el-table-column>
           <el-table-column label="拿货编号" align="center">
             <template slot-scope="scope">
-              <div>{{ scope.row.ErpSku.ErpSpu.GetGoodsNum }}</div>
+              <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="editSkuInfo.GetGoodsNum" style="width:180px" />
+              <span v-if="scope.row.Id !== editSkuInfo.Id">{{ scope.row.ErpSku.ErpSpu.GetGoodsNum }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="颜色" align="center">
+          <el-table-column label="SKU" align="center" width="200">
             <template slot-scope="scope">
-              <div>{{ scope.row.ErpSku.Color }}</div>
+              <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="editSkuInfo.SkuName" style="width:180px" />
+              <span v-if="scope.row.Id !== editSkuInfo.Id">{{ scope.row.ErpSku.SkuName }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="码数" align="center">
+          <el-table-column label="数量" prop="Amount" align="center" width="50">
             <template slot-scope="scope">
-              <div>{{ scope.row.ErpSku.Size }}</div>
+              <el-badge :value="scope.row.Amount" class="item" style="padding-top: 8px;" :type="Number(scope.row.Amount) > 1 ? 'danger' : 'info'" />
             </template>
           </el-table-column>
-          <el-table-column label="价格" align="center">
+          <el-table-column label="拿货价格" align="center" width="100">
             <template slot-scope="scope">
-              <div>{{ scope.row.ErpSku.ErpSpu.Price }}</div>
+              <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="editSkuInfo.Price" style="width:80px" />
+              <span v-if="scope.row.Id !== editSkuInfo.Id">{{ scope.row.ErpSku.ErpSpu.Price }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="数量" prop="Amount" align="center" />
           <el-table-column label="备注" prop="Remark" align="center" />
-          <el-table-column label="状态" align="center">
+          <el-table-column label="状态" align="center" width="80">
             <template slot-scope="scope">
-              <el-tag v-if="scope.row.IsLack === 0 && scope.row.IsGet === 0" type="info">待拿货</el-tag>
-              <el-tag v-if="scope.row.IsLack === 1" type="danger">缺货</el-tag>
-              <el-tag v-if="scope.row.IsGet === 1" type="success">已拿货</el-tag>
+              <el-tag v-if="scope.row.IsLack === 0 && scope.row.IsGet === 0" type="info" size="small">待拿货</el-tag>
+              <el-tag v-if="scope.row.IsLack === 1" type="danger" size="small">缺货</el-tag>
+              <el-tag v-if="scope.row.IsGet === 1" type="success" size="small">已拿货</el-tag>
             </template>
           </el-table-column>
-          <!-- <el-table-column label="操作" prop="" align="center" /> -->
+          <el-table-column label="操作" prop="" align="center" width="138">
+            <template slot-scope="scope">
+              <!-- <el-link :underline="false" @click="handleEditGetGoodsInfo(scope.row)">编辑</el-link> -->
+              <a v-if="scope.row.Id === editSkuInfo.Id" style="color:#409eff" @click="handleSkuSave()">保存<br></a>
+              <a v-if="scope.row.Id === editSkuInfo.Id" @click="editSkuInfo = {}">取消</a>
+              <a v-if="scope.row.Id !== editSkuInfo.Id" style="color:#409eff" @click="handleEditGetGoodsInfo(scope.row)">编辑<br></a>
+              <!-- <el-link v-if="scope.row.Id !== editSkuInfo.Id" :underline="false" style="color:#f56c6c" @click="handleSkuDelete(scope.row.Id)">删除</el-link> -->
+            </template>
+          </el-table-column>
         </el-table>
       </div>
     </el-card>
@@ -94,7 +104,7 @@
 </template>
 
 <script>
-import { getGoodsList } from '@/api/getGoods'
+import { getGoodsList, editGetGoodsInfo } from '@/api/getGoods'
 import qs from 'qs'
 
 export default {
@@ -107,7 +117,16 @@ export default {
         OrderNum: '',
         GoodsStatus: ''
       },
-      selectList: []
+      selectList: [],
+      editSkuInfo: {
+        'Id': '',
+        'SkuId': null,
+        'SpuId': null,
+        'GetGoodsNum': '',
+        'SkuName': '',
+        'Price': '',
+        'Amount': ''
+      }
     }
   },
   created() {
@@ -146,6 +165,29 @@ export default {
         })
         window.open(href, '_blank')
       }
+    },
+    handleEditGetGoodsInfo(item) {
+      console.log(item)
+      // Id
+      this.editSkuInfo.Id = item.Id
+      this.editSkuInfo.SkuId = item.ErpSku.Id
+      this.editSkuInfo.SpuId = item.ErpSku.ErpSpu.Id
+      // Info
+      this.editSkuInfo.GetGoodsNum = item.ErpSku.ErpSpu.GetGoodsNum
+      this.editSkuInfo.Price = item.ErpSku.ErpSpu.Price
+      this.editSkuInfo.SkuName = item.ErpSku.SkuName
+    },
+    handleSkuSave() {
+      const getGoodsInfo = qs.stringify(this.editSkuInfo)
+      editGetGoodsInfo(getGoodsInfo).then(res => {
+        if (res.success) {
+          this.$message.success('保存成功!')
+          this.editSkuInfo = {}
+          this.getList()
+        } else {
+          this.$message.error('处理失败，请重试!')
+        }
+      })
     }
   }
 }
