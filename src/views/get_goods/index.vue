@@ -8,6 +8,7 @@
         <el-row :gutter="8" type="flex" justify="right">
           <el-col :span="17">
             <el-button type="primary" @click="toPrint">打印</el-button>
+            <!-- <el-button type="warning" @click="toPrint">扫描入库</el-button> -->
           </el-col>
           <el-col :span="2">
             <el-select v-model="paginator.GoodsStatus" placeholder="拿货状态">
@@ -113,7 +114,7 @@ export default {
       tableData: [],
       paginator: {
         offset: 0,
-        limit: 20,
+        limit: 200,
         OrderNum: '',
         GoodsStatus: ''
       },

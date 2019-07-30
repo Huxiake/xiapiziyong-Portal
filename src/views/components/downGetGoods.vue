@@ -1,14 +1,17 @@
 <template>
   <div style="width: 100%;background-color:#525659">
     <div id="pdfDom" v-loading.fullscreen="loading" element-loading-text="标签生成中" style="margin: 0 auto;background-color:#ffffff" :style="{width: pdfWidth, height: pdfHeght}">
-      <div v-for="(item, i) in pagedata" :key="i" style="float:left;height:335px" :style="{width: Math.ceil(i%2) === 0 ? 591.84 : 558.34}">
+      <div v-for="(item, i) in pagedata" :key="i" style="float:left;height:335px" :style="{width: Math.ceil(i%2) === 0 ? '591.84px' : '558.34px'}">
         <div class="tabLeft">
-          <div style="width:100%;height:20%;font-size:44px;font-weight:bold;margin-left:22px;">{{ item.ErpSku.ErpSpu.SectionNum }}&nbsp;<span style="font-size:40px;font-weight:100">{{ item.ErpSku.Size.replace('码', '') }}</span></div>
-          <div style="display:table-cell;width:207px;height:126px;font-size:32px;text-align:center;vertical-align:middle">{{ item.ErpSku.Color }}</div>
-          <div style="width:100%;height:40%;font-size:38px;font-weight:bold;margin-top:8px;margin-left:22px;">{{ item.GetGoodsNum.replace(/\#+/g, `&#10;`).replace(/\*/g, `&nbsp;&nbsp;`) }}</div>
+          <div style="width:95%;height:40%;font-size:32px;font-weight:bold;margin-left:22px;">{{ item.GetGoodsNum }}</div>
+          <div style="display:table-cell;width:207px;height:90px;font-size:32px;text-align:center;vertical-align:middle">{{ item.ErpSku.SkuName }}</div>
+          <div style="width:95%;height:20%;font-size:38px;font-weight:bold;margin-top:8px;margin-left:22px;">{{ item.ErpSku.ErpSpu.Price }}&nbsp;{{ item.ErpSku.ErpSpu.Price }}</div>
         </div>
         <div class="tabRight">
           <div :id="'qrDom' + i" />
+        </div>
+        <div class="tabBottom">
+          <span style="padding-left:68px;">{{ item.OrderDetails.ErpOrder.OrderNum }}</span>
         </div>
         <div v-if="Math.ceil(i%2) === 0" style="height:335px;width:33.5px;float:right" />
       </div>
@@ -56,9 +59,9 @@ export default {
       console.log(skuLen)
       for (let i = 0; i < skuLen; i++) {
         new QRCode('qrDom' + i, {
-          width: 310,
-          height: 310,
-          text: `{"SectionNum":"${this.pagedata[i].ErpSku.ErpSpu.SectionNum}","GetGoodsNum":"${this.pagedata[i].GetGoodsNum}","ErpSkuId":"${this.pagedata[i].ErpSku.Id}","Color":"${this.pagedata[i].ErpSku.Color}","Size":"${this.pagedata[i].ErpSku.Size}"}`
+          width: 263,
+          height: 263,
+          text: `{"GetGoodsId":"${this.pagedata[i].Id}"`
         })
       }
     }
@@ -68,17 +71,22 @@ export default {
 
 <style lang="scss" scoped>
   .tabLeft {
-    width: 208px;
-    height: 315px;
-    margin:10px;
+    width: 272px;
+    height: 263px;
+    margin:5px;
     float:left;
     div {
-      margin-top: 10px;
+      margin-top: 5px;
     }
   }
   .tabRight {
-      width: 310px;
-      margin:10px;
+      width: 263px;
+      margin:5px;
       float:left;
+  }
+  .tabBottom {
+      height: 47px;
+      margin-top: 268px;
+      font-size: 45px;
   }
 </style>

@@ -21,7 +21,8 @@
         <el-row :gutter="4" style="margin-top:20px;margin-bottom:20px" type="flex" justify="space-between">
           <el-col :span="4">
             <el-button type="primary" size="medium" @click="dealWithOrder">配货</el-button>
-            <el-button size="medium" @click="handleMarkWaiting">标记待货</el-button>
+            <!-- <el-button size="medium" @click="handleMarkWaiting">标记待货</el-button> -->
+            <el-button type="warning" size="medium" @click="scanEnter">扫描入库</el-button>
           </el-col>
           <el-col :span="2">
             <el-button size="medium" type="primary" style="font-size:12px;" @click="addOrder">新增</el-button>
@@ -162,6 +163,30 @@
         <el-button type="primary" @click="newOrderSubmit">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 扫描入库 -->
+    <el-dialog title="扫码配货" :visible.sync="dialogPickVisible">
+      <el-form :model="newOrderInfo" label-position="right" label-width="100px">
+        <el-form-item label="订单编号">
+          <el-input v-model="newOrderInfo.OrderNum" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="买家公司">
+          <el-input v-model="newOrderInfo.BuyerCompanyName" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="买家名">
+          <el-input v-model="newOrderInfo.BuyerMemberName" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="订单金额">
+          <el-input v-model="newOrderInfo.GoodsRealPrice" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="newOrderInfo.Remark" type="textarea" autocomplete="off" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogAddOrderVisible = false">取 消</el-button>
+        <el-button type="primary" @click="newOrderSubmit">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -180,6 +205,7 @@ export default {
   data() {
     return {
       dialogAddOrderVisible: false,
+      dialogPickVisible: false,
       newOrderInfo: {},
       newOrderDetailsInfo: {
         ErpOrder: {
@@ -382,6 +408,9 @@ export default {
       }).catch(e => {
         console.log(e)
       })
+    },
+    scanEnter() {
+      this.dialogPickVisible = true
     }
   }
 }
