@@ -39,3 +39,12 @@ export function editGetGoodsInfo(params) {
     method: 'post'
   })
 }
+
+// 扫码入库
+export function scanfMarkGet(params) {
+  return request({
+    url: '/getgoods/scanfMarkGet',
+    method: 'post',
+    data: params
+  })
+}

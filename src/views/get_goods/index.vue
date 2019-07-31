@@ -8,7 +8,7 @@
         <el-row :gutter="8" type="flex" justify="right">
           <el-col :span="17">
             <el-button type="primary" @click="toPrint">打印</el-button>
-            <!-- <el-button type="warning" @click="toPrint">扫描入库</el-button> -->
+            <el-button type="warning" @click="handleScanf">扫描入库</el-button>
           </el-col>
           <el-col :span="2">
             <el-select v-model="paginator.GoodsStatus" placeholder="拿货状态">
@@ -29,8 +29,20 @@
           </el-col>
         </el-row>
       </div>
+      <!-- <el-pagination
+        :current-page="paginatorInfo.currentPage + 1"
+        :page-size="paginator.limit"
+        :total="paginatorInfo.totalCount"
+        layout="prev, pager, next"
+        style="margin-bottom:10px;float:right"
+        @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
+      /> -->
+      <!-- 列表 -->
       <div class="box-table">
         <el-table
+          v-loading="loading"
+          element-loading-text="数据加载中"
           :data="tableData"
           stripe
           @selection-change="handleSelectionChange"
@@ -99,24 +111,61 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-pagination
+          :current-page="paginatorInfo.currentPage"
+          :page-sizes="[10, 50, 100, 200, 300, 400]"
+          :page-size="paginator.limit"
+          :total="paginatorInfo.totalCount"
+          layout="total, sizes, prev, pager, next, jumper"
+          style="margin-top:20px;margin-bottom:20px;float:right"
+          @current-change="handleCurrentChange"
+          @size-change="handleSizeChange"
+          @prev-click="prevPage"
+          @next-click="nextPage"
+        />
       </div>
     </el-card>
+    <!-- 扫码入库dialog -->
+    <!-- <el-dialog :visible.sync="dialogScanfVisible"> -->
+    <el-dialog title="扫码入库" :visible.sync="dialogScanfVisible" :close-on-click-modal="false" :modal="true" top="5vh" :lock-scroll="false">
+      <el-input ref="scanInput" v-model="goodsInfo" autofocus placeholder="扫码枪输入" @keyup.enter.native="addGoods" @blur="getFocus" />
+      <el-card>
+        <el-tag
+          v-for="(item, i) in scanfSkuList"
+          :key="i"
+          :type="Number(item.am) > 1 ? 'primary' : 'info'"
+          closable
+          style="margin: 5px"
+          @close="handleClose(item)"
+        >
+          <el-badge :value="item.am" class="item">
+            {{ item.onum + ' / ' + item.sn }}
+          </el-badge>
+        </el-tag>
+      </el-card>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancelScanf">取 消</el-button>
+        <el-button type="primary" @click="emitScanf">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getGoodsList, editGetGoodsInfo } from '@/api/getGoods'
+import { getGoodsList, editGetGoodsInfo, scanfMarkGet } from '@/api/getGoods'
 import qs from 'qs'
 
 export default {
   data() {
     return {
+      dialogScanfVisible: false,
       tableData: [],
+      loading: false,
       paginator: {
         offset: 0,
-        limit: 200,
+        limit: 10,
         OrderNum: '',
-        GoodsStatus: ''
+        GoodsStatus: 'Pending'
       },
       selectList: [],
       editSkuInfo: {
@@ -127,7 +176,11 @@ export default {
         'SkuName': '',
         'Price': '',
         'Amount': ''
-      }
+      },
+      paginatorInfo: {},
+      scanfSkuList: [],
+      infoArr: [],
+      goodsInfo: ''
     }
   },
   created() {
@@ -135,12 +188,15 @@ export default {
   },
   methods: {
     getList() {
+      this.loading = true
       const searchAttrs = qs.stringify(this.paginator)
       getGoodsList(searchAttrs)
         .then(res => {
           if (res.success) {
             console.log(res)
             this.tableData = res.data.rows
+            this.paginatorInfo = res.data.paginator
+            this.loading = false
             console.log('tabledata', this.tableData)
           }
         })
@@ -189,6 +245,76 @@ export default {
           this.$message.error('处理失败，请重试!')
         }
       })
+    },
+    // 分页下一页
+    handleCurrentChange(val) {
+      this.paginator.offset = this.paginator.limit * (val - 1)
+      this.getList()
+    },
+    // 分页size改变
+    handleSizeChange(val) {
+      this.paginator.limit = val
+      this.getList()
+    },
+    prevPage() {
+      this.paginator.offset = this.paginator.offset - this.paginator.limit
+    },
+    nextPage() {
+      this.paginator.offset = this.paginator.offset + this.paginator.limit
+    },
+    getFocus() {
+      this.$nextTick(() => {
+        this.$refs.scanInput.$el.children[0].focus()
+      })
+    },
+    handleScanf() {
+      this.dialogScanfVisible = true
+      this.getFocus()
+    },
+    handleClose(tag) {
+      this.scanfSkuList.splice(this.scanfSkuList.indexOf(tag), 1)
+    },
+    // 扫码枪输入相关:
+    addGoods() {
+      const goodsInfoStr = this.goodsInfo.replace('?', '').replace('“', '"').replace('”', '"').replace('，', ',').replace('｛', '{').replace('｝', '}')
+      const infoDetails = JSON.parse(goodsInfoStr)
+      this.goodsInfo = ''
+      console.log(infoDetails)
+      this.scanfSkuList.push(infoDetails)
+      // 存入请求参数
+      const temp_info = {}
+      temp_info.gid = Number(infoDetails.gid)
+      temp_info.am = 1
+      this.infoArr.push(temp_info)
+    },
+    emitScanf() {
+      console.log(this.infoArr)
+      console.log(qs.stringify(this.infoArr))
+      console.log(this.infoArr.join(','))
+      // const a = Array.from(this.infoArr, i => {
+      //   Array.from(i)
+      //   return i
+      // })
+      // const sendInfoArr = []
+      // for (let i = 0; i < this.infoArr.length; i++) {
+      //   const currentGid = this.infoArr[i].gid
+      //   let currentAm = this.infoArr[i].am
+      //   for (let j = 0; j < this.infoArr.length; j++) {
+      //     if (this.infoArr[j].gid === currentGid) {
+      //       const temp_info = {}
+      //       temp_info.gid = this.infoArr[j].gid
+      //       temp_info.am = currentAm++
+      //     }
+      //   }
+      // }
+      scanfMarkGet({ data: this.infoArr }).then(res => {
+        console.log(res)
+      })
+    },
+    cancelScanf() {
+      this.scanfSkuList = []
+      this.goodsInfo = ''
+      this.infoArr = []
     }
   }
 }

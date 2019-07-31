@@ -74,11 +74,11 @@ export default {
     sendNotice() {
       const notice = new Notification('未读的缺货反馈', {
         body: '有' + this.newNotice.length + '条未读的缺货反馈，请及时处理！',
-        icon: 'https://xiapiziyong-pic.oss-cn-shenzhen.aliyuncs.com/logo.jpg'
+        icon: 'https://xkErp-pic.oss-cn-shenzhen.aliyuncs.com/logo.jpg'
       })
       this.$nextTick(() => {
         if (typeof (this.$refs.sound) !== 'undefined') {
-          this.$refs.sound.src = 'https://xiapiziyong-pic.oss-cn-shenzhen.aliyuncs.com/8407.mp3'
+          this.$refs.sound.src = 'https://xkErp-pic.oss-cn-shenzhen.aliyuncs.com/8407.mp3'
         }
       })
       console.log(notice)

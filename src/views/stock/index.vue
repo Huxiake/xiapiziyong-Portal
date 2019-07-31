@@ -39,7 +39,7 @@
         </el-row>
       </div>
       <div class="box-table">
-        <el-pagination
+        <!-- <el-pagination
           :current-page="paginatorInfo.currentPage + 1"
           :page-size="paginator.limit"
           :total="paginatorInfo.totalCount"
@@ -47,9 +47,11 @@
           style="margin-bottom:10px;float:right"
           @current-change="handleCurrentChange"
           @size-change="handleSizeChange"
-        />
+        /> -->
         <!-- spu列表 -->
         <el-table
+          v-loading="loading"
+          element-loading-text="数据加载中"
           :data="stockData"
           stripe
           @row-click="toSectionDetails"
@@ -86,7 +88,7 @@
           :page-size="paginator.limit"
           :total="paginatorInfo.totalCount"
           layout="total, sizes, prev, pager, next, jumper"
-          style="margin-top:20px;float:right"
+          style="margin-top:20px;margin-bottom:20px;float:right"
           @current-change="handleCurrentChange"
           @size-change="handleSizeChange"
         />
@@ -180,6 +182,7 @@ export default {
     return {
       dialogEditVisible: false,
       dialogAddVisible: false,
+      loading: false,
       parmas: {
         first: ''
       },
@@ -217,11 +220,13 @@ export default {
   },
   methods: {
     getList() {
+      this.loading = true
       const searchAttrs = qs.stringify(this.paginator)
       stockList(searchAttrs).then(res => {
         if (res.success) {
           this.stockData = res.data.rows
           this.paginatorInfo = res.data.paginator
+          this.loading = false
         }
       })
     },
