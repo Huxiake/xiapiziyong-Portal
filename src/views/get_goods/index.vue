@@ -105,7 +105,7 @@
             <template slot-scope="scope">
               <!-- <el-link :underline="false" @click="handleEditGetGoodsInfo(scope.row)">编辑</el-link> -->
               <a v-if="scope.row.Id === editSkuInfo.Id" style="color:#409eff" @click="handleSkuSave()">保存<br></a>
-              <a v-if="scope.row.Id === editSkuInfo.Id" @click="editSkuInfo = {}">取消</a>
+              <a v-if="scope.row.Id === editSkuInfo.Id" @click="cancelEditSku">取消</a>
               <a v-if="scope.row.Id !== editSkuInfo.Id" style="color:#409eff" @click="handleEditGetGoodsInfo(scope.row)">编辑<br></a>
               <!-- <el-link v-if="scope.row.Id !== editSkuInfo.Id" :underline="false" style="color:#f56c6c" @click="handleSkuDelete(scope.row.Id)">删除</el-link> -->
             </template>
@@ -238,13 +238,32 @@ export default {
       const getGoodsInfo = qs.stringify(this.editSkuInfo)
       editGetGoodsInfo(getGoodsInfo).then(res => {
         if (res.success) {
+          this.editSkuInfo = {
+            'Id': '',
+            'SkuId': null,
+            'SpuId': null,
+            'GetGoodsNum': '',
+            'SkuName': '',
+            'Price': '',
+            'Amount': ''
+          }
           this.$message.success('保存成功!')
-          this.editSkuInfo = {}
           this.getList()
         } else {
           this.$message.error('处理失败，请重试!')
         }
       })
+    },
+    cancelEditSku() {
+      this.editSkuInfo = {
+        'Id': '',
+        'SkuId': null,
+        'SpuId': null,
+        'GetGoodsNum': '',
+        'SkuName': '',
+        'Price': '',
+        'Amount': ''
+      }
     },
     // 分页下一页
     handleCurrentChange(val) {
