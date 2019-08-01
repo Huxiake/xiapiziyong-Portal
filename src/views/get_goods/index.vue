@@ -129,7 +129,7 @@
     <!-- <el-dialog :visible.sync="dialogScanfVisible"> -->
     <el-dialog title="扫码入库" :visible.sync="dialogScanfVisible" :close-on-click-modal="false" :modal="true" top="5vh" :lock-scroll="false">
       <el-input ref="scanInput" v-model="goodsInfo" autofocus placeholder="扫码枪输入" @keyup.enter.native="addGoods" @blur="getFocus" />
-      <el-card>
+      <el-card style="margin-top:10px;">
         <el-tag
           v-for="(item, i) in scanfSkuList"
           :key="i"
@@ -312,6 +312,7 @@ export default {
       })
     },
     cancelScanf() {
+      this.dialogScanfVisible = false
       this.scanfSkuList = []
       this.goodsInfo = ''
       this.infoArr = []
