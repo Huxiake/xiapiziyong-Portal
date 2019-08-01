@@ -3,15 +3,15 @@
     <div id="pdfDom" v-loading.fullscreen="loading" element-loading-text="标签生成中" style="margin: 0 auto;background-color:#ffffff" :style="{width: pdfWidth, height: pdfHeght}">
       <div v-for="(item, i) in pagedata" :key="i" style="float:left;height:335px" :style="{width: Math.ceil(i%2) === 0 ? '591.84px' : '558.34px'}">
         <div class="tabLeft">
-          <div style="width:95%;height:40%;font-size:32px;font-weight:bold;margin-left:22px;">{{ item.GetGoodsNum }}</div>
-          <div style="display:table-cell;width:207px;height:90px;font-size:32px;text-align:center;vertical-align:middle">{{ item.ErpSku.SkuName }}</div>
-          <div style="width:95%;height:20%;font-size:38px;font-weight:bold;margin-top:8px;margin-left:22px;">{{ item.ErpSku.ErpSpu.Price }}&nbsp;{{ item.ErpSku.ErpSpu.Price }}</div>
+          <div style="width:100%;height:40%;font-size:32px;font-weight:bold;margin-left:12px;">{{ item.ErpSku.ErpSpu.GetGoodsNum }}</div>
+          <div style="display:table-cell;width:40%;height:90px;font-size:32px;text-align:center;vertical-align:middle">{{ item.ErpSku.SkuName }}</div>
+          <div style="width:100%;height:20%;font-size:38px;font-weight:bold;margin-top:8px;margin-left:22px;">{{ item.ErpSku.ErpSpu.Price }}&nbsp;{{ item.ErpSku.ErpSpu.Price }}</div>
         </div>
         <div class="tabRight">
           <div :id="'qrDom' + i" />
         </div>
         <div class="tabBottom">
-          <span style="padding-left:68px;">{{ item.OrderDetails.ErpOrder.OrderNum }}</span>
+          <span style="padding-left:60px;">{{ item.OrderNum }}</span>
         </div>
         <div v-if="Math.ceil(i%2) === 0" style="height:335px;width:33.5px;float:right" />
       </div>
@@ -22,6 +22,7 @@
 <script>
 import QRCode from 'qrcodejs2'
 import { getGoodsList } from '@/api/getGoods'
+import qs from 'qs'
 
 export default {
   data() {
@@ -31,16 +32,22 @@ export default {
       printList: [],
       pagedata: [],
       pdfWidth: '1150.17px',
-      pdfHeght: ''
+      pdfHeght: '',
+      paginator: {
+        offset: 0,
+        limit: 10
+      }
     }
   },
   created() {
     this.printList = 'ids=[' + this.$route.query.id + ']'
+    this.paginator.limit = this.$route.query.id.length
     this.getList()
   },
   methods: {
     getList() {
-      getGoodsList(this.printList)
+      const data = qs.stringify(this.paginator)
+      getGoodsList(this.printList + '&' + data)
         .then(res => {
           if (res.success) {
             this.pagedata = res.data.rows
@@ -61,7 +68,8 @@ export default {
         new QRCode('qrDom' + i, {
           width: 263,
           height: 263,
-          text: `{"gid":"${this.pagedata[i].Id}","onum":"${this.pagedata[i].OrderDetails.ErpOrder.OrderNum.substr(this.pagedata[i].OrderDetails.ErpOrder.OrderNum.length - 5)}","sn":"${this.pagedata[i].ErpSku.SkuName}","sid":"${this.pagedata[i].ErpSku.Id}","am":"${this.pagedata[i].Amount}"}`
+          // text: `{"gid":"${this.pagedata[i].Id}","onum":"${this.pagedata[i].OrderNum.substr(this.pagedata[i].OrderNum.length - 5)}","sn":"${this.pagedata[i].ErpSku.SkuName}","sid":"${this.pagedata[i].ErpSku.Id}","am":"${this.pagedata[i].Amount}"}`
+          text: `{"gid":"${this.pagedata[i].Id}","sn":"${this.pagedata[i].ErpSku.SkuName}","sid":"${this.pagedata[i].ErpSku.Id}","am":"${this.pagedata[i].Amount}"}`
           // text: `{"gid":"${this.pagedata[i].Id}","onum":"${this.pagedata[i].OrderDetails.ErpOrder.OrderNum.substr(this.pagedata[i].OrderDetails.ErpOrder.OrderNum.length - 5)}","sn":"${this.pagedata[i].ErpSku.SkuName}","sid":"${this.pagedata[i].ErpSku.Id}"}`
         })
       }
