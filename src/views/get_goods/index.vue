@@ -41,7 +41,7 @@
       <!-- 列表 -->
       <div class="box-table">
         <el-table
-          v-loading="loading"
+          v-loading="tableLoading"
           element-loading-text="数据加载中"
           :data="tableData"
           stripe
@@ -137,7 +137,7 @@
     <!-- 扫码入库dialog -->
     <el-dialog title="扫码入库" :visible.sync="dialogScanfVisible" :close-on-click-modal="false" :modal="true" top="5vh" :lock-scroll="false">
       <el-input ref="scanInput" v-model="goodsInfo" autofocus placeholder="扫码枪输入" @keyup.enter.native="addGoods" @blur="getFocus" />
-      <el-card style="margin-top:10px;">
+      <el-card v-loading="scanfLoading" element-loading-text="入库中" style="margin-top:10px;">
         <el-tag
           v-for="(item, i) in scanfSkuList"
           :key="i"
@@ -168,7 +168,8 @@ export default {
     return {
       dialogScanfVisible: false,
       tableData: [],
-      loading: false,
+      tableLoading: false,
+      scanfLoading: false,
       paginator: {
         offset: 0,
         limit: 10,
@@ -297,10 +298,12 @@ export default {
     },
     handleClose(tag) {
       this.scanfSkuList.splice(this.scanfSkuList.indexOf(tag), 1)
+      this.infoArr.splice(this.infoArr.indexOf({ gid: tag.gid, am: tag.am }), 1)
+      console.log(tag)
     },
     // 扫码枪输入相关:
     addGoods() {
-      const goodsInfoStr = this.goodsInfo.replace('?', '').replace('“', '"').replace('”', '"').replace('，', ',').replace('｛', '{').replace('｝', '}')
+      const goodsInfoStr = this.goodsInfo.replace('?', '').replace('“', '"').replace('”', '"').replace('，', ',').replace('｛', '{').replace('｝', '}').replace('",,', '",')
       const infoDetails = JSON.parse(goodsInfoStr)
       this.goodsInfo = ''
       console.log(infoDetails)
@@ -312,9 +315,27 @@ export default {
       this.infoArr.push(temp_info)
     },
     emitScanf() {
-      scanfMarkGet({ data: this.infoArr }).then(res => {
-        console.log(res)
-      })
+      if (this.infoArr.length > 0) {
+        this.scanfLoading = true
+        scanfMarkGet({ data: this.infoArr })
+          .then(res => {
+            if (res.success) {
+              // 清空infoArr
+              this.infoArr = []
+              this.scanfSkuList = []
+
+              this.$message.success('入库成功!')
+            }
+          })
+          .catch(e => {
+            console.log(e)
+          })
+          .finally(() => {
+            this.scanfLoading = false
+          })
+      } else {
+        this.$message.error('入库项目为空!')
+      }
     },
     cancelScanf() {
       this.dialogScanfVisible = false

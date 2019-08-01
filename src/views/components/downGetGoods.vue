@@ -14,8 +14,8 @@
           <span style="padding-left:6px;">{{ item.OrderNum }}</span>
           <span style="padding-left:12px;">{{ (item.OrderDetails.ErpOrder.ShopName).substring(0, 2) }}</span>
         </div>
+        <div v-if="Math.ceil(i%2) === 0" style="height:328.8px;width:34.01px;float:right" />
       </div>
-      <div v-if="Math.ceil(i%2) === 0" style="height:328.8px;width:34.01px;float:right" />
     </div>
   </div>
 </template>
@@ -70,7 +70,7 @@ export default {
           width: 263,
           height: 263,
           // text: `{"gid":"${this.pagedata[i].Id}","onum":"${this.pagedata[i].OrderNum.substr(this.pagedata[i].OrderNum.length - 5)}","sn":"${this.pagedata[i].ErpSku.SkuName}","sid":"${this.pagedata[i].ErpSku.Id}","am":"${this.pagedata[i].Amount}"}`
-          text: `{"gid":"${this.pagedata[i].Id}","onum":"${this.pagedata[i].OrderNum.substr(this.pagedata[i].OrderNum.length - 5)}",,"sn":"${this.pagedata[i].ErpSku.SkuName}","sid":"${this.pagedata[i].ErpSku.Id}","am":"${this.pagedata[i].Amount}"}`
+          text: `{"gid":"${this.pagedata[i].Id}","onum":"${this.pagedata[i].OrderNum.substr(this.pagedata[i].OrderNum.length - 5)}","sn":"${this.pagedata[i].ErpSku.SkuName}","sid":"${this.pagedata[i].ErpSku.Id}","am":"${this.pagedata[i].Amount}"}`
           // text: `{"gid":"${this.pagedata[i].Id}","onum":"${this.pagedata[i].OrderDetails.ErpOrder.OrderNum.substr(this.pagedata[i].OrderDetails.ErpOrder.OrderNum.length - 5)}","sn":"${this.pagedata[i].ErpSku.SkuName}","sid":"${this.pagedata[i].ErpSku.Id}"}`
         })
       }

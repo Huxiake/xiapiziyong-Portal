@@ -91,6 +91,8 @@
           style="margin-top:20px;margin-bottom:20px;float:right"
           @current-change="handleCurrentChange"
           @size-change="handleSizeChange"
+          @prev-click="prevPage"
+          @next-click="nextPage"
         />
       </div>
     </el-card>
@@ -375,14 +377,20 @@ export default {
       })
     },
     // 分页下一页
-    handleCurrentChange() {
-      this.paginator.offset++
+    handleCurrentChange(val) {
+      this.paginator.offset = this.paginator.limit * (val - 1)
       this.getList()
     },
     // 分页size改变
     handleSizeChange(val) {
       this.paginator.limit = val
       this.getList()
+    },
+    prevPage() {
+      this.paginator.offset = this.paginator.offset - this.paginator.limit
+    },
+    nextPage() {
+      this.paginator.offset = this.paginator.offset + this.paginator.limit
     }
   }
 }
