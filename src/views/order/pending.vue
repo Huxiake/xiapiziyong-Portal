@@ -41,6 +41,8 @@
       </div>
       <div class="box-table">
         <el-table
+          v-loading="tableLoading"
+          element-loading-text=""
           :data="tableData"
           header-cell-class-name="orderHeaderStyle"
           cell-class-name="testStyle"
@@ -206,6 +208,7 @@ export default {
     return {
       dialogAddOrderVisible: false,
       dialogPickVisible: false,
+      tableLoading: false,
       newOrderInfo: {},
       newOrderDetailsInfo: {
         ErpOrder: {
@@ -220,7 +223,7 @@ export default {
       tableData: [],
       paginator: {
         offset: 0,
-        limit: 20,
+        limit: 300,
         OrderNum: '',
         ErpStatus: '["pending","waiting","forPickup"]'
       },
@@ -245,6 +248,7 @@ export default {
         })
     },
     dealWithOrder() {
+      this.tableLoading = true
       const orderList = 'OrderList=[' + this.selectList.join(',') + ']'
       toGetGoodsList(orderList)
         .then(res => {
@@ -253,6 +257,9 @@ export default {
         })
         .catch(err => {
           console.log(err)
+        })
+        .finally(() => {
+          this.tableLoading = false
         })
     },
     handleSelectionChange(list) {
