@@ -30,13 +30,13 @@
         </el-row>
       </div>
       <!-- <el-pagination
-        :current-page="paginatorInfo.currentPage + 1"
-        :page-size="paginator.limit"
-        :total="paginatorInfo.totalCount"
-        layout="prev, pager, next"
-        style="margin-bottom:10px;float:right"
-        @current-change="handleCurrentChange"
-        @size-change="handleSizeChange"
+          :current-page="paginatorInfo.currentPage + 1"
+          :page-size="paginator.limit"
+          :total="paginatorInfo.totalCount"
+          layout="prev, pager, next"
+          style="margin-bottom:10px;float:right"
+          @current-change="handleCurrentChange"
+          @size-change="handleSizeChange"
       /> -->
       <!-- 列表 -->
       <div class="box-table">
@@ -73,16 +73,15 @@
           <el-table-column label="拿货编号" align="center">
             <template slot-scope="scope">
               <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="editSkuInfo.GetGoodsNum" style="width:180px" />
-              <span v-if="scope.row.Id !== editSkuInfo.Id">{{ scope.row.ErpSku.ErpSpu.GetGoodsNum }}</span>
+              <span v-else>{{ scope.row.ErpSku.ErpSpu.GetGoodsNum }}</span>
             </template>
           </el-table-column>
           <el-table-column label="SKU" align="center" width="200">
             <template slot-scope="scope">
-              <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="editSkuInfo.SkuName" style="width:180px" />
-              <span v-if="scope.row.Id !== editSkuInfo.Id">{{ scope.row.ErpSku.SkuName }}</span>
+              <span>{{ scope.row.ErpSku.SkuName }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="数量" prop="Amount" align="center" width="50">
+          <el-table-column label="数量" align="center" width="50">
             <template slot-scope="scope">
               <el-badge :value="scope.row.Amount" class="item" style="padding-top: 8px;" :type="Number(scope.row.Amount) > 1 ? 'danger' : 'info'" />
             </template>
@@ -90,10 +89,20 @@
           <el-table-column label="拿货价格" align="center" width="100">
             <template slot-scope="scope">
               <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="editSkuInfo.Price" style="width:80px" />
-              <span v-if="scope.row.Id !== editSkuInfo.Id">{{ scope.row.ErpSku.ErpSpu.Price }}</span>
+              <span v-else>{{ scope.row.ErpSku.ErpSpu.Price }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="备注" prop="Remark" align="center" />
+          <el-table-column label="备注" align="center">
+            <template slot-scope="scope">
+              <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="editSkuInfo.Remark" style="width:120px" />
+              <span v-else>{{ scope.row.Remark }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="店铺" prop="ShopName" align="center">
+            <template slot-scope="scope">
+              <span>{{ scope.row.OrderDetails.ErpOrder.ShopName }}</span>
+            </template>
+          </el-table-column>
           <el-table-column label="状态" align="center" width="80">
             <template slot-scope="scope">
               <el-tag v-if="scope.row.IsLack === 0 && scope.row.IsGet === 0" type="info" size="small">待拿货</el-tag>
@@ -106,14 +115,14 @@
               <!-- <el-link :underline="false" @click="handleEditGetGoodsInfo(scope.row)">编辑</el-link> -->
               <a v-if="scope.row.Id === editSkuInfo.Id" style="color:#409eff" @click="handleSkuSave()">保存<br></a>
               <a v-if="scope.row.Id === editSkuInfo.Id" @click="cancelEditSku">取消</a>
-              <a v-if="scope.row.Id !== editSkuInfo.Id" style="color:#409eff" @click="handleEditGetGoodsInfo(scope.row)">编辑<br></a>
+              <a v-else style="color:#409eff" @click="handleEditGetGoodsInfo(scope.row)">编辑<br></a>
               <!-- <el-link v-if="scope.row.Id !== editSkuInfo.Id" :underline="false" style="color:#f56c6c" @click="handleSkuDelete(scope.row.Id)">删除</el-link> -->
             </template>
           </el-table-column>
         </el-table>
         <el-pagination
           :current-page="paginatorInfo.currentPage"
-          :page-sizes="[10, 50, 100, 200, 300, 400]"
+          :page-sizes="[10, 50, 100, 200, 300, 400, 500]"
           :page-size="paginator.limit"
           :total="paginatorInfo.totalCount"
           layout="total, sizes, prev, pager, next, jumper"
@@ -126,7 +135,6 @@
       </div>
     </el-card>
     <!-- 扫码入库dialog -->
-    <!-- <el-dialog :visible.sync="dialogScanfVisible"> -->
     <el-dialog title="扫码入库" :visible.sync="dialogScanfVisible" :close-on-click-modal="false" :modal="true" top="5vh" :lock-scroll="false">
       <el-input ref="scanInput" v-model="goodsInfo" autofocus placeholder="扫码枪输入" @keyup.enter.native="addGoods" @blur="getFocus" />
       <el-card style="margin-top:10px;">
@@ -173,7 +181,7 @@ export default {
         'SkuId': null,
         'SpuId': null,
         'GetGoodsNum': '',
-        'SkuName': '',
+        'Remark': '',
         'Price': '',
         'Amount': ''
       },
@@ -193,7 +201,6 @@ export default {
       getGoodsList(searchAttrs)
         .then(res => {
           if (res.success) {
-            console.log(res)
             this.tableData = res.data.rows
             this.paginatorInfo = res.data.paginator
             this.loading = false
@@ -207,7 +214,6 @@ export default {
     handleSelectionChange(list) {
       const selectList_temp = []
       for (const i in list) {
-        console.log(i)
         selectList_temp.push(list[i]['Id'])
       }
       this.selectList = selectList_temp
@@ -224,7 +230,6 @@ export default {
       }
     },
     handleEditGetGoodsInfo(item) {
-      console.log(item)
       // Id
       this.editSkuInfo.Id = item.Id
       this.editSkuInfo.SkuId = item.ErpSku.Id
@@ -232,7 +237,7 @@ export default {
       // Info
       this.editSkuInfo.GetGoodsNum = item.ErpSku.ErpSpu.GetGoodsNum
       this.editSkuInfo.Price = item.ErpSku.ErpSpu.Price
-      this.editSkuInfo.SkuName = item.ErpSku.SkuName
+      this.editSkuInfo.Remark = item.Remark
     },
     handleSkuSave() {
       const getGoodsInfo = qs.stringify(this.editSkuInfo)
@@ -243,7 +248,7 @@ export default {
             'SkuId': null,
             'SpuId': null,
             'GetGoodsNum': '',
-            'SkuName': '',
+            'Remark': '',
             'Price': '',
             'Amount': ''
           }
@@ -260,7 +265,7 @@ export default {
         'SkuId': null,
         'SpuId': null,
         'GetGoodsNum': '',
-        'SkuName': '',
+        'Remark': '',
         'Price': '',
         'Amount': ''
       }
@@ -307,25 +312,6 @@ export default {
       this.infoArr.push(temp_info)
     },
     emitScanf() {
-      console.log(this.infoArr)
-      console.log(qs.stringify(this.infoArr))
-      console.log(this.infoArr.join(','))
-      // const a = Array.from(this.infoArr, i => {
-      //   Array.from(i)
-      //   return i
-      // })
-      // const sendInfoArr = []
-      // for (let i = 0; i < this.infoArr.length; i++) {
-      //   const currentGid = this.infoArr[i].gid
-      //   let currentAm = this.infoArr[i].am
-      //   for (let j = 0; j < this.infoArr.length; j++) {
-      //     if (this.infoArr[j].gid === currentGid) {
-      //       const temp_info = {}
-      //       temp_info.gid = this.infoArr[j].gid
-      //       temp_info.am = currentAm++
-      //     }
-      //   }
-      // }
       scanfMarkGet({ data: this.infoArr }).then(res => {
         console.log(res)
       })
