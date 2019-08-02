@@ -5,7 +5,7 @@
         <div class="tabLeft">
           <div style="width:272px;height:105px;font-size:34px;font-weight:bold;margin-left:12px;">{{ item.GetGoodsNum.replace(/金富|大西|大时|三|跨客|女人|非|宝|柏|新潮|泓|景|国/g, '').replace('新金', 'J').replace('佰', 'B') }}</div>
           <div style="display:table-cell;width:40%;height:90px;font-size:32px;text-align:center;vertical-align:middle">{{ item.ErpSku.SkuName }}</div>
-          <div style="width:100%;height:20%;font-size:38px;font-weight:bold;margin-top:8px;">{{ item.ErpSku.ErpSpu.Price }}&nbsp;{{ item.Remark }}</div>
+          <div style="width:100%;height:20%;font-size:30px;font-weight:bold;margin-top:8px;">{{ item.ErpSku.ErpSpu.Price }}&nbsp;{{ item.Remark }}</div>
         </div>
         <div class="tabRight">
           <div :id="'qrDom' + i" />
@@ -51,7 +51,21 @@ export default {
       getGoodsList(this.printList + '&' + data)
         .then(res => {
           if (res.success) {
-            this.pagedata = res.data.rows
+            const data = res.data.rows
+            const temp_data = []
+            Object.assign(temp_data, data)
+            for (let i = 0; i < data.length; i++) {
+              if (Number(data[i].Amount) > 1) {
+                for (let j = 0; j < Number(data[i].Amount) - 1; j++) {
+                  console.log('position', i + j)
+                  console.log('i', i)
+                  console.log('j', j)
+                  console.log('data[i]', data[i])
+                  temp_data.splice(i + j, 0, data[i])
+                }
+              }
+            }
+            this.pagedata = temp_data
             this.pdfHeght = (167.08 * (this.pagedata.length + 1)) + 'px'
           }
         })
@@ -69,9 +83,7 @@ export default {
         new QRCode('qrDom' + i, {
           width: 263,
           height: 263,
-          // text: `{"gid":"${this.pagedata[i].Id}","onum":"${this.pagedata[i].OrderNum.substr(this.pagedata[i].OrderNum.length - 5)}","sn":"${this.pagedata[i].ErpSku.SkuName}","sid":"${this.pagedata[i].ErpSku.Id}","am":"${this.pagedata[i].Amount}"}`
-          text: `{"gid":"${this.pagedata[i].Id}","onum":"${this.pagedata[i].OrderNum.substr(this.pagedata[i].OrderNum.length - 5)}","sn":"${this.pagedata[i].ErpSku.SkuName}","sid":"${this.pagedata[i].ErpSku.Id}","am":"${this.pagedata[i].Amount}"}`
-          // text: `{"gid":"${this.pagedata[i].Id}","onum":"${this.pagedata[i].OrderDetails.ErpOrder.OrderNum.substr(this.pagedata[i].OrderDetails.ErpOrder.OrderNum.length - 5)}","sn":"${this.pagedata[i].ErpSku.SkuName}","sid":"${this.pagedata[i].ErpSku.Id}"}`
+          text: `{"gid":"${this.pagedata[i].Id}","onum":"${this.pagedata[i].OrderNum.substr(this.pagedata[i].OrderNum.length - 5)}","sn":"${this.pagedata[i].ErpSku.SkuName}","sid":"${this.pagedata[i].ErpSku.Id}"}`
         })
       }
     }

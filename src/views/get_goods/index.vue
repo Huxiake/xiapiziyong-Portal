@@ -299,7 +299,6 @@ export default {
     handleClose(tag) {
       this.scanfSkuList.splice(this.scanfSkuList.indexOf(tag), 1)
       this.infoArr.splice(this.infoArr.indexOf({ gid: tag.gid, am: tag.am }), 1)
-      console.log(tag)
     },
     // 扫码枪输入相关:
     addGoods() {

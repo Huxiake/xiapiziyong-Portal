@@ -32,59 +32,101 @@
       </div>
       <div class="box-table">
         <el-table
+          v-loading="tableLoading"
+          element-loading-text=""
           :data="tableData"
-          stripe
+          header-cell-class-name="orderHeaderStyle"
+          cell-class-name="testStyle"
+          :default-expand-all="true"
           @selection-change="handleSelectionChange"
         >
-          <el-table-column type="expand">
+          <el-table-column type="selection" width="40" />
+          <el-table-column type="expand" width="20">
             <template slot-scope="scope">
-              <div class="expand-header">订单明细:</div>
               <el-table
                 :data="scope.row.ErpOrderDetails"
-                header-row-class-name="testStyle"
+                :show-header="false"
+                header-row-class-name="expand-header"
                 border
+                style="padding:0px;"
               >
-                <el-table-column label="款号" prop="SectionNum" align="center" />
-                <el-table-column label="颜色" prop="Color" align="center" />
-                <el-table-column label="尺码" prop="Size" align="center" />
-                <el-table-column label="数量" prop="Amount" align="center" />
-                <el-table-column label="状态" prop="ErpStatus" align="center">
+                <!-- 商品信息框 -->
+                <el-table-column width="265">
                   <template slot-scope="subScope">
-                    <el-tag v-if="subScope.row.ErpStatus === 'pending'" type="info">未处理</el-tag>
-                    <el-tag v-if="subScope.row.ErpStatus === 'get'" type="success">已拿货</el-tag>
-                    <el-tag v-if="subScope.row.ErpStatus === 'fulfilled'" type="success">现货</el-tag>
-                    <el-tag v-if="subScope.row.ErpStatus === 'forPickup'" type="danger">待拿货</el-tag>
-                    <el-tag v-if="subScope.row.ErpStatus === 'lack'" type="danger">待处理缺货</el-tag>
+                    <div class="goodsInfo-left">
+                      <el-popover
+                        placement="right-start"
+                        width="326"
+                        trigger="hover"
+                      >
+                        <img :src="subScope.row.SpuPicURL" style="margin:0 auto;width:300px;height:300px">
+                        <img slot="reference" :src="subScope.row.SpuPicURL" style="width:58px;height:58px;border:2px solid #e3e3e3;">
+                      </el-popover>
+                    </div>
+                    <div class="goodsInfo-right">
+                      <div style="line-height:16px;">
+                        <a :href="subScope.row.SaleURL" target="_blank" style="color:#428bca">{{ subScope.row.SkuName }}</a>
+                        <span>*</span>
+                        <el-badge :value="subScope.row.Amount" class="item" style="padding-top: 8px;" :type="Number(subScope.row.Amount) > 1 ? 'danger' : 'info'" />
+                      </div>
+                      <div>
+                        {{ subScope.row.SkuName }}
+                      </div>
+                    </div>
                   </template>
+                </el-table-column>
+                <!-- 中间的 -->
+                <el-table-column align="center">
+                  <!-- <template slot-scope="subScope">
+                    <el-input v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" v-model="newOrderDetailsInfo.Amount" />
+                    <span v-else>{{ subScope.row.Amount }}</span>
+                  </template> -->
+                </el-table-column>
+                <!-- 状态框 -->
+                <el-table-column prop="ErpStatus" align="center" width="100">
+                  <template slot-scope="subScope">
+                    <el-tag v-if="subScope.row.ErpStatus === 'pending'" type="info" size="small">未处理</el-tag>
+                    <el-tag v-if="subScope.row.ErpStatus === 'fulfilled'" type="success" size="small">现货</el-tag>
+                    <el-tag v-if="subScope.row.ErpStatus === 'get'" type="success" size="small">已拿货</el-tag>
+                    <el-tag v-if="subScope.row.ErpStatus === 'forPickup'" type="warning" size="small">待拿货</el-tag>
+                    <el-tag v-if="subScope.row.ErpStatus === 'lack'" type="danger" size="small">待处理缺货</el-tag>
+                  </template>
+                </el-table-column>
+                <!-- 操作框 -->
+                <el-table-column align="center" width="80">
+                  <!-- <template slot-scope="subScope"> -->
+                  <!-- <el-button v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" type="primary" size="small" @click="newOrderDetalisSubmit">保存</el-button> -->
+                  <!-- <el-button v-else size="small" @click="handleDeleteOrderDetails(subScope.row.Id)">删除</el-button> -->
+                  <!-- </template> -->
                 </el-table-column>
               </el-table>
             </template>
           </el-table-column>
-          <el-table-column label="订单编号" prop="OrderNum" align="center" />
+          <el-table-column label="商品信息" prop="OrderNum" width="205" />
           <el-table-column label="时间" align="center">
             <template slot-scope="scope">
               {{ $moment(scope.row.OrderCreateTime).format('YYYY-MM-DD hh:mm:ss') }}
             </template>
           </el-table-column>
-          <el-table-column label="买家公司名" prop="BuyerCompanyName" align="center" />
-          <el-table-column label="买家会员名" prop="BuyerMemberName" align="center" />
-          <!-- <el-table-column label="订单总金额" prop="GoodsTotalPrice" align="center" width="80" /> -->
-          <el-table-column label="实付金额" prop="GoodsRealPrice" align="center" width="80" />
-          <el-table-column label="买家留言" prop="BuyerRemake" align="center" />
-          <el-table-column label="备注" prop="Rename" align="center" />
-          <el-table-column label="订单状态" prop="OrderStatus" align="center" />
+          <el-table-column :formatter="tableFormatter" label="订单金额" align="center">
+            <template slot-scope="scope">
+              <span>{{ scope.row.CurrencyCode + ' ' + scope.row.GoodsTotalPrice }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column :formatter="tableFormatter" label="买家会员名" prop="BuyerMemberName" align="center" />
+          <el-table-column :formatter="tableFormatter" label="买家留言" prop="BuyerRemake" align="center" />
+          <el-table-column :formatter="tableFormatter" label="备注" prop="Remark" align="center" />
+          <el-table-column :formatter="tableFormatter" label="店铺" prop="ShopName" align="center" />
           <el-table-column label="仓库状态" prop="ErpStatus" align="center" width="100">
             <template slot-scope="scope">
-              <el-tag v-if="scope.row.ErpStatus === 'pending'" type="info">新订单</el-tag>
-              <el-tag v-if="scope.row.ErpStatus === 'forPickup'" type="warning">处理中</el-tag>
-              <el-tag v-if="scope.row.ErpStatus === 'fulfilled'">已配货</el-tag>
-              <el-tag v-if="scope.row.ErpStatus === 'complete'" type="success">已完成</el-tag>
-              <el-tag v-if="scope.row.ErpStatus === 'waiting'" type="danger">待货</el-tag>
+              <el-tag v-if="scope.row.ErpStatus === 'pending'" type="info" size="small">新订单</el-tag>
+              <el-tag v-if="scope.row.ErpStatus === 'forPickup'" size="small">处理中</el-tag>
+              <el-tag v-if="scope.row.ErpStatus === 'waiting'" type="danger" size="small">待货</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" width="80">
             <template slot-scope="scope">
-              <el-button type="danger" size="mini" icon="el-icon-delete" circle @click="deleteOrder(scope.row.Id)" />
+              <el-button type="danger" size="mini" icon="el-icon-delete" circle @click="handleDeleteOrder(scope.row.Id)" />
             </template>
           </el-table-column>
         </el-table>
@@ -174,16 +216,36 @@ export default {
 <style lang="scss">
   .box-card {
     min-height: calc(100vh - 70px);
+    .orderHeaderStyle {
+      background-color: #EEE;
+    }
     .expand-header {
-      font-size: 15px;
-      font-weight: bold;
-      padding-bottom: 5px;
+      height: 0px;
     }
     .testStyle {
-      color: #000;
+      background-color: #fafafa;
+      border-bottom: 0;
     }
     .el-table td, .el-table th {
       padding: 8px 0;
+      .el-table__expanded-cell {
+        padding: 0px;
+      }
     }
+    .goodsInfo-left {
+      width: 70px;
+      float: left;
+    }
+    .goodsInfo-right {
+      width: 174px;
+      float: left;
+    }
+  }
+</style>
+
+<style lang="scss">
+  .el-table__body {
+    // border-left: 1px solid #ebeef5;
+    // border-right: 1px solid #ebeef5;
   }
 </style>
