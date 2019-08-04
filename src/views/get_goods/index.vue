@@ -73,7 +73,7 @@
           <el-table-column label="拿货编号" align="center">
             <template slot-scope="scope">
               <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="editSkuInfo.GetGoodsNum" style="width:180px" />
-              <span v-else>{{ scope.row.ErpSku.ErpSpu.GetGoodsNum }}</span>
+              <span v-else>{{ scope.row.GetGoodsNum }}</span>
             </template>
           </el-table-column>
           <el-table-column label="SKU" align="center" width="200">

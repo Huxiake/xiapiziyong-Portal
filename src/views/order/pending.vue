@@ -58,6 +58,8 @@
                 header-row-class-name="expand-header"
                 border
                 style="padding:0px;"
+                @cell-mouse-enter="enterOrderDetailsOption"
+                @cell-mouse-leave="leaveOrderDetailsOption"
               >
                 <!-- 商品信息框 -->
                 <el-table-column width="265">
@@ -69,7 +71,7 @@
                         trigger="hover"
                       >
                         <img :src="subScope.row.SpuPicURL" style="margin:0 auto;width:300px;height:300px">
-                        <img slot="reference" :src="subScope.row.SpuPicURL" style="width:58px;height:58px;border:2px solid #e3e3e3;">
+                        <img slot="reference" :src="subScope.row.SpuPicURL" style="width:66px;height:66px;border:2px solid #e3e3e3;">
                       </el-popover>
                     </div>
                     <div class="goodsInfo-right">
@@ -79,7 +81,10 @@
                         <el-badge :value="subScope.row.Amount" class="item" style="padding-top: 8px;" :type="Number(subScope.row.Amount) > 1 ? 'danger' : 'info'" />
                       </div>
                       <div>
-                        {{ subScope.row.SkuName }}
+                        {{ subScope.row.SectionNum }}
+                      </div>
+                      <div>
+                        {{ scope.row.CurrencyCode + ' ' + subScope.row.SalePrice }}
                       </div>
                     </div>
                   </template>
@@ -102,11 +107,13 @@
                   </template>
                 </el-table-column>
                 <!-- 操作框 -->
-                <el-table-column align="center" width="80">
-                  <!-- <template slot-scope="subScope"> -->
-                  <!-- <el-button v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" type="primary" size="small" @click="newOrderDetalisSubmit">保存</el-button> -->
-                  <!-- <el-button v-else size="small" @click="handleDeleteOrderDetails(subScope.row.Id)">删除</el-button> -->
-                  <!-- </template> -->
+                <el-table-column align="center" width="180">
+                  <template slot-scope="subScope">
+                    <!-- <el-button v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" type="primary" size="small" @click="newOrderDetalisSubmit">保存</el-button> -->
+                    <a v-show="deleteOrderDetailsBtnId === subScope.row.Id" type="primary" size="small" @click="handleDeleteOrderDetails(subScope.row.Id)">
+                      删除
+                    </a>
+                  </template>
                 </el-table-column>
               </el-table>
             </template>
@@ -122,7 +129,11 @@
               <span>{{ scope.row.CurrencyCode + ' ' + scope.row.GoodsTotalPrice }}</span>
             </template>
           </el-table-column>
-          <el-table-column :formatter="tableFormatter" label="买家会员名" prop="BuyerMemberName" align="center" />
+          <el-table-column :formatter="tableFormatter" label="买家信息" prop="BuyerMemberName" align="center">
+            <template slot-scope="scope">
+              {{ scope.row.AreaName + ' ' + scope.row.BuyerMemberName }}
+            </template>
+          </el-table-column>
           <el-table-column :formatter="tableFormatter" label="买家留言" prop="BuyerRemake" align="center" />
           <el-table-column :formatter="tableFormatter" label="备注" prop="Remark" align="center" />
           <el-table-column :formatter="tableFormatter" label="店铺" prop="ShopName" align="center" />
@@ -133,9 +144,15 @@
               <el-tag v-if="scope.row.ErpStatus === 'waiting'" type="danger" size="small">待货</el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="操作" align="center" width="80">
+          <el-table-column label="操作" align="center" width="180">
             <template slot-scope="scope">
-              <el-button type="danger" size="mini" icon="el-icon-delete" circle @click="handleDeleteOrder(scope.row.Id)" />
+              <!-- <el-button type="danger" size="mini" icon="el-icon-delete" circle @click="handleDeleteOrder(scope.row.Id)">删除</el-buton> -->
+              <el-button type="danger" size="mini" @click="handleDeleteOrder(scope.row.Id)">
+                删除
+              </el-button>
+              <el-button size="mini" @click="addOrderDetails(scope.row.Id)">
+                添加
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -163,6 +180,27 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogAddOrderVisible = false">取 消</el-button>
         <el-button type="primary" @click="newOrderSubmit">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 添加明细 -->
+    <el-dialog title="添加订单明细" :visible.sync="dialogAddOrderDetalisVisible">
+      <el-form :model="newOrderDetailsInfo" label-position="right" label-width="100px">
+        <el-form-item label="款式编号">
+          <el-input v-model="newOrderDetailsInfo.SectionNum" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="SKU">
+          <el-input v-model="newOrderDetailsInfo.SkuName" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="售价">
+          <el-input v-model="newOrderDetailsInfo.SalePrice" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="数量">
+          <el-input v-model="newOrderDetailsInfo.Amount" autocomplete="off" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogAddOrderDetalisVisible = false">取 消</el-button>
+        <el-button type="primary" @click="newOrderDetalisSubmit">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 扫描入库 -->
@@ -207,7 +245,9 @@ export default {
   data() {
     return {
       dialogAddOrderVisible: false,
+      dialogAddOrderDetalisVisible: false,
       dialogPickVisible: false,
+      deleteOrderDetailsBtnId: '',
       tableLoading: false,
       newOrderInfo: {},
       newOrderDetailsInfo: {
@@ -217,6 +257,8 @@ export default {
         SectionNum: '',
         Color: '',
         Size: '',
+        SkuName: '',
+        SalePrice: '',
         Amount: '',
         ErpStatus: 'pending'
       },
@@ -330,21 +372,23 @@ export default {
     addOrder() {
       this.dialogAddOrderVisible = true
     },
-    addOrderDetails(data) {
-      if (this.newOrderDetailsInfo.ErpOrder.Id === '') {
-        this.newOrderDetailsInfo.ErpOrder.Id = data.row.Id
-        const details = {
-          ErpOrder: {
-            Id: data.row.Id
-          },
-          Amount: '',
-          Color: '',
-          Size: '',
-          DeliverRemark: '',
-          new: true
-        }
-        data.row.ErpOrderDetails.push(details)
-      }
+    addOrderDetails(orderId) {
+      this.dialogAddOrderDetalisVisible = true
+      this.newOrderDetailsInfo.ErpOrder.Id = orderId
+      // if (this.newOrderDetailsInfo.ErpOrder.Id === '') {
+      //   this.newOrderDetailsInfo.ErpOrder.Id = data.row.Id
+      //   const details = {
+      //     ErpOrder: {
+      //       Id: data.row.Id
+      //     },
+      //     Amount: '',
+      //     Color: '',
+      //     Size: '',
+      //     DeliverRemark: '',
+      //     new: true
+      //   }
+      //   data.row.ErpOrderDetails.push(details)
+      // }
     },
     newOrderSubmit() {
       this.newOrderInfo.ErpStatus = 'pending'
@@ -361,6 +405,7 @@ export default {
     },
     newOrderDetalisSubmit() {
       // this.newOrderInfo.ErpStatus = 'pending'
+      console.log(this.newOrderDetailsInfo)
       addErpOrderDetails(this.newOrderDetailsInfo).then(res => {
         if (res.success) {
           this.newOrderDetailsInfo = {
@@ -373,6 +418,7 @@ export default {
             Amount: '',
             ErpStatus: 'pending'
           }
+          this.dialogAddOrderDetalisVisible = false
           this.$message.success('添加订单详情成功！')
           this.getList()
         }
@@ -418,6 +464,14 @@ export default {
     },
     scanEnter() {
       this.dialogPickVisible = true
+    },
+    enterOrderDetailsOption(row, column, cell, event) {
+      this.deleteOrderDetailsBtnId = row.Id
+    },
+    leaveOrderDetailsOption(row, column, cell, event) {
+      if (this.deleteOrderDetailsBtnId === row.Id) {
+        this.deleteOrderDetailsBtnId = ''
+      }
     }
   }
 }
