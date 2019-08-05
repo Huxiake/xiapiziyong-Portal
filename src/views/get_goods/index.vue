@@ -298,23 +298,36 @@ export default {
     },
     handleClose(tag) {
       this.scanfSkuList.splice(this.scanfSkuList.indexOf(tag), 1)
-      this.infoArr.splice(this.infoArr.indexOf({ gid: tag.gid, am: tag.am }), 1)
+      // this.infoArr.splice(this.infoArr.indexOf({ gid: tag.gid, am: tag.am }), 1)
     },
     // 扫码枪输入相关:
     addGoods() {
       const goodsInfoStr = this.goodsInfo.replace('?', '').replace('“', '"').replace('”', '"').replace('，', ',').replace('｛', '{').replace('｝', '}').replace('",,', '",')
       const infoDetails = JSON.parse(goodsInfoStr)
       this.goodsInfo = ''
-      console.log(infoDetails)
       this.scanfSkuList.push(infoDetails)
       // 存入请求参数
-      const temp_info = {}
-      temp_info.gid = Number(infoDetails.gid)
-      temp_info.am = 1
-      this.infoArr.push(temp_info)
+      // const temp_info = {}
+      // temp_info.gid = Number(infoDetails.gid)
+      // temp_info.am = 1
+      // this.infoArr.push(temp_info)
     },
     emitScanf() {
-      if (this.infoArr.length > 0) {
+      // 处理infoArr
+      if (this.scanfSkuList.length > 0) {
+        for (let i = 0; i < this.scanfSkuList.length; i++) {
+          const currentGid = this.scanfSkuList[i].gid
+          let count = 0
+          for (let j = 0; j < this.scanfSkuList.length; j++) {
+            if (this.scanfSkuList[j].gid === currentGid) { // 统计该id的数量
+              count++
+            }
+          }
+          if (this.infoArr.map((v) => { return v.gid }).indexOf(currentGid) === -1) {
+            this.infoArr.push({ gid: currentGid, am: count })
+          }
+        }
+        console.log(this.infoArr)
         this.scanfLoading = true
         scanfMarkGet({ data: this.infoArr })
           .then(res => {
