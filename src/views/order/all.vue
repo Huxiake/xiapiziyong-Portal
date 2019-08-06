@@ -70,7 +70,10 @@
                         <el-badge :value="subScope.row.Amount" class="item" style="padding-top: 8px;" :type="Number(subScope.row.Amount) > 1 ? 'danger' : 'info'" />
                       </div>
                       <div>
-                        {{ subScope.row.SkuName }}
+                        {{ subScope.row.SectionNum }}
+                      </div>
+                      <div>
+                        {{ scope.row.CurrencyCode + ' ' + subScope.row.SalePrice }}
                       </div>
                     </div>
                   </template>
@@ -130,6 +133,18 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-pagination
+          :current-page="paginatorInfo.currentPage + 1"
+          :page-sizes="[50, 100, 200, 300, 400]"
+          :page-size="paginator.limit"
+          :total="paginatorInfo.totalCount"
+          layout="total, sizes, prev, pager, next, jumper"
+          style="margin-top:20px;margin-bottom:20px;float:right"
+          @current-change="handleCurrentChange"
+          @size-change="handleSizeChange"
+          @prev-click="prevPage"
+          @next-click="nextPage"
+        />
       </div>
     </el-card>
   </div>
@@ -151,7 +166,8 @@ export default {
         OrderNum: '',
         ErpStatus: ''
       },
-      selectList: []
+      selectList: [],
+      paginatorInfo: {}
     }
   },
   created() {
@@ -208,6 +224,22 @@ export default {
       console.log(this.pickerDate)
       this.paginator.Date = '["' + this.pickerDate.join('","') + '"]'
       console.log(this.paginator.Date)
+    },
+    // 分页下一页
+    handleCurrentChange(val) {
+      this.paginator.offset = this.paginator.limit * (val - 1)
+      this.getList()
+    },
+    // 分页size改变
+    handleSizeChange(val) {
+      this.paginator.limit = val
+      this.getList()
+    },
+    prevPage() {
+      this.paginator.offset = this.paginator.offset - this.paginator.limit
+    },
+    nextPage() {
+      this.paginator.offset = this.paginator.offset + this.paginator.limit
     }
   }
 }

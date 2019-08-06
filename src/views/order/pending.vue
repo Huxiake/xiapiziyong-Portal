@@ -11,7 +11,7 @@
             <el-input
               v-model="paginator.OrderNum"
               size="medium"
-              placeholder="请输入款号"
+              placeholder="输入订单号查询"
             />
           </el-col>
           <el-col :span="1.5">
@@ -21,7 +21,6 @@
         <el-row :gutter="4" style="margin-top:20px;margin-bottom:20px" type="flex" justify="space-between">
           <el-col :span="4">
             <el-button type="primary" size="medium" @click="dealWithOrder">配货</el-button>
-            <!-- <el-button size="medium" @click="handleMarkWaiting">标记待货</el-button> -->
             <el-button type="warning" size="medium" @click="scanEnter">扫描入库</el-button>
           </el-col>
           <el-col :span="2">
@@ -156,6 +155,18 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-pagination
+          :current-page="paginatorInfo.currentPage + 1"
+          :page-sizes="[50, 100, 200, 300, 400]"
+          :page-size="paginator.limit"
+          :total="paginatorInfo.totalCount"
+          layout="total, sizes, prev, pager, next, jumper"
+          style="margin-top:20px;margin-bottom:20px;float:right"
+          @current-change="handleCurrentChange"
+          @size-change="handleSizeChange"
+          @prev-click="prevPage"
+          @next-click="nextPage"
+        />
       </div>
     </el-card>
     <!-- 新增订单 -->
@@ -265,12 +276,13 @@ export default {
       tableData: [],
       paginator: {
         offset: 0,
-        limit: 300,
+        limit: 50,
         OrderNum: '',
         ErpStatus: '["pending","waiting","forPickup"]'
       },
       selectList: [],
-      skuInfo: {}
+      skuInfo: {},
+      paginatorInfo: {}
     }
   },
   created() {
@@ -278,11 +290,14 @@ export default {
   },
   methods: {
     getList() {
+      this.tableLoading = true
       const searchAttrs = qs.stringify(this.paginator)
       orderList(searchAttrs)
         .then(res => {
           if (res.success) {
             this.tableData = res.data.rows
+            this.paginatorInfo = res.data.paginator
+            this.tableLoading = false
           }
         })
         .catch(err => {
@@ -472,6 +487,22 @@ export default {
       if (this.deleteOrderDetailsBtnId === row.Id) {
         this.deleteOrderDetailsBtnId = ''
       }
+    },
+    // 分页下一页
+    handleCurrentChange(val) {
+      this.paginator.offset = this.paginator.limit * (val - 1)
+      this.getList()
+    },
+    // 分页size改变
+    handleSizeChange(val) {
+      this.paginator.limit = val
+      this.getList()
+    },
+    prevPage() {
+      this.paginator.offset = this.paginator.offset - this.paginator.limit
+    },
+    nextPage() {
+      this.paginator.offset = this.paginator.offset + this.paginator.limit
     }
   }
 }

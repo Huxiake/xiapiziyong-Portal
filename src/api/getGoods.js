@@ -48,3 +48,19 @@ export function scanfMarkGet(params) {
     data: params
   })
 }
+
+// 根据spuID获取getgoodslist
+export function getGetGoodsNumListBySpuID(id) {
+  return request({
+    url: '/getgoods/getGetGoodsNumListBySpuID?spuID=' + id,
+    method: 'get'
+  })
+}
+
+// 设置默认拿货
+export function setDefaultGetGoodsNum(params) {
+  return request({
+    url: '/getgoods/setDefaultGetGoodsNum?' + params,
+    method: 'post'
+  })
+}

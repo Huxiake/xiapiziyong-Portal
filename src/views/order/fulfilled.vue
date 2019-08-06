@@ -63,7 +63,10 @@
                         <el-badge :value="subScope.row.Amount" class="item" style="padding-top: 8px;" :type="Number(subScope.row.Amount) > 1 ? 'danger' : 'info'" />
                       </div>
                       <div>
-                        {{ subScope.row.SkuName }}
+                        {{ subScope.row.SectionNum }}
+                      </div>
+                      <div>
+                        {{ scope.row.CurrencyCode + ' ' + subScope.row.SalePrice }}
                       </div>
                     </div>
                   </template>
@@ -112,9 +115,7 @@
           <el-table-column :formatter="tableFormatter" label="店铺" prop="ShopName" align="center" />
           <el-table-column label="仓库状态" prop="ErpStatus" align="center" width="100">
             <template slot-scope="scope">
-              <el-tag v-if="scope.row.ErpStatus === 'pending'" type="info" size="small">新订单</el-tag>
-              <el-tag v-if="scope.row.ErpStatus === 'forPickup'" size="small">处理中</el-tag>
-              <el-tag v-if="scope.row.ErpStatus === 'waiting'" type="danger" size="small">待货</el-tag>
+              <el-tag v-if="scope.row.ErpStatus === 'fulfilled'" type="success" size="small">已配货</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" width="80">
@@ -123,6 +124,18 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-pagination
+          :current-page="paginatorInfo.currentPage + 1"
+          :page-sizes="[50, 100, 200, 300, 400]"
+          :page-size="paginator.limit"
+          :total="paginatorInfo.totalCount"
+          layout="total, sizes, prev, pager, next, jumper"
+          style="margin-top:20px;margin-bottom:20px;float:right"
+          @current-change="handleCurrentChange"
+          @size-change="handleSizeChange"
+          @prev-click="prevPage"
+          @next-click="nextPage"
+        />
       </div>
     </el-card>
   </div>
@@ -136,13 +149,15 @@ export default {
   data() {
     return {
       tableData: [],
+      tableLoading: false,
       paginator: {
         offset: 0,
         limit: 20,
         OrderNum: '',
         ErpStatus: '["fulfilled"]'
       },
-      selectList: []
+      selectList: [],
+      paginatorInfo: {}
     }
   },
   created() {
@@ -150,11 +165,14 @@ export default {
   },
   methods: {
     getList() {
+      this.tableLoading = true
       const searchAttrs = qs.stringify(this.paginator)
       orderList(searchAttrs)
         .then(res => {
           if (res.success) {
             this.tableData = res.data.rows
+            this.paginatorInfo = res.data.paginator
+            this.tableLoading = false
           }
         })
         .catch(err => {
@@ -197,6 +215,29 @@ export default {
           }
         })
       })
+    },
+    tableFormatter(row, column, cellValue) {
+      let res = false
+      if (cellValue === '') {
+        res = true
+      }
+      return res ? '-' : cellValue
+    },
+    // 分页下一页
+    handleCurrentChange(val) {
+      this.paginator.offset = this.paginator.limit * (val - 1)
+      this.getList()
+    },
+    // 分页size改变
+    handleSizeChange(val) {
+      this.paginator.limit = val
+      this.getList()
+    },
+    prevPage() {
+      this.paginator.offset = this.paginator.offset - this.paginator.limit
+    },
+    nextPage() {
+      this.paginator.offset = this.paginator.offset + this.paginator.limit
     }
   }
 }

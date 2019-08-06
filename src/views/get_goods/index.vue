@@ -29,15 +29,6 @@
           </el-col>
         </el-row>
       </div>
-      <!-- <el-pagination
-          :current-page="paginatorInfo.currentPage + 1"
-          :page-size="paginator.limit"
-          :total="paginatorInfo.totalCount"
-          layout="prev, pager, next"
-          style="margin-bottom:10px;float:right"
-          @current-change="handleCurrentChange"
-          @size-change="handleSizeChange"
-      /> -->
       <!-- 列表 -->
       <div class="box-table">
         <el-table
@@ -60,20 +51,38 @@
               </el-popover>
             </template>
           </el-table-column>
-          <el-table-column label="订单号" align="center" width="200">
+          <el-table-column label="订单号" align="center" width="160">
             <template slot-scope="scope">
               <div>{{ scope.row.OrderNum }}</div>
             </template>
           </el-table-column>
-          <el-table-column label="款号" align="center">
+          <el-table-column label="售价" align="center" width="100">
+            <template slot-scope="scope">
+              <div>{{ scope.row.OrderDetails.ErpOrder.CurrencyCode + ' ' + scope.row.OrderDetails.SalePrice }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column label="款号" align="center" width="150">
             <template slot-scope="scope">
               <div>{{ scope.row.ErpSku.SectionNum }}</div>
             </template>
           </el-table-column>
           <el-table-column label="拿货编号" align="center">
             <template slot-scope="scope">
-              <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="editSkuInfo.GetGoodsNum" style="width:180px" />
-              <span v-else>{{ scope.row.GetGoodsNum }}</span>
+              <!-- <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="editSkuInfo.GetGoodsNum" style="width:180px" /> -->
+              <!-- <span v-else>{{ scope.row.GetGoodsNum }}</span> -->
+              <el-select v-if="scope.row.Id === editSkuInfo.Id" v-model="editSkuInfo.GetGoodsNum" filterable allow-create default-first-option style="width:180px" placeholder="请选择">
+                <el-option
+                  v-for="(item, index) in getGoodsNumList"
+                  :key="index"
+                  :value="item"
+                  @mouseover="enterOption(index)"
+                  @mouseleave="leaveOption()"
+                >
+                  <span style="float: left" @mouseover="enterOption(index)">{{ item }}</span>
+                  <span v-if="index === focusNum" style="float: right; color: #66b1ff; font-size: 13px" @click="handleDefaultNum(item)">默认</span>
+                </el-option>
+              </el-select>
+              <div v-if="scope.row.Id !== editSkuInfo.Id">{{ scope.row.GetGoodsNum }}</div>
             </template>
           </el-table-column>
           <el-table-column label="SKU" align="center" width="200">
@@ -83,7 +92,7 @@
           </el-table-column>
           <el-table-column label="数量" align="center" width="50">
             <template slot-scope="scope">
-              <el-badge :value="scope.row.Amount" class="item" style="padding-top: 8px;" :type="Number(scope.row.Amount) > 1 ? 'danger' : 'info'" />
+              <el-badge :value="Number(Number(scope.row.Amount) - scope.row.PutInAmount)" class="item" style="padding-top: 8px;" :type="Number(Number(scope.row.Amount) - scope.row.PutInAmount) > 1 ? 'danger' : 'info'" />
             </template>
           </el-table-column>
           <el-table-column label="拿货价格" align="center" width="100">
@@ -160,7 +169,7 @@
 </template>
 
 <script>
-import { getGoodsList, editGetGoodsInfo, scanfMarkGet } from '@/api/getGoods'
+import { getGoodsList, editGetGoodsInfo, scanfMarkGet, getGetGoodsNumListBySpuID, setDefaultGetGoodsNum } from '@/api/getGoods'
 import qs from 'qs'
 
 export default {
@@ -189,7 +198,9 @@ export default {
       paginatorInfo: {},
       scanfSkuList: [],
       infoArr: [],
-      goodsInfo: ''
+      goodsInfo: '',
+      getGoodsNumList: [],
+      focusNum: null
     }
   },
   created() {
@@ -197,14 +208,14 @@ export default {
   },
   methods: {
     getList() {
-      this.loading = true
+      this.tableLoading = true
       const searchAttrs = qs.stringify(this.paginator)
       getGoodsList(searchAttrs)
         .then(res => {
           if (res.success) {
             this.tableData = res.data.rows
             this.paginatorInfo = res.data.paginator
-            this.loading = false
+            this.tableLoading = false
             console.log('tabledata', this.tableData)
           }
         })
@@ -239,8 +250,39 @@ export default {
       this.editSkuInfo.GetGoodsNum = item.ErpSku.ErpSpu.GetGoodsNum
       this.editSkuInfo.Price = item.ErpSku.ErpSpu.Price
       this.editSkuInfo.Remark = item.Remark
+      // 根据item.spuId拉取getGoodsList, 存至getgoodslist
+      getGetGoodsNumListBySpuID(item.ErpSku.ErpSpu.Id).then(res => {
+        if (res.success) {
+          this.getGoodsNumList = Array.from(res.data.rows, i => { return i.GetGoodsNum })
+          console.log(this.getGoodsNumList)
+        }
+      })
     },
     handleSkuSave() {
+      if (this.getGoodsNumList.indexOf(this.editSkuInfo.GetGoodsNum) === -1) {
+        this.editSkuInfo.newNum = 1
+        this.$confirm('是否将新编号设置为默认拿货编码?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'info'
+        })
+          .then(() => {
+            const data = qs.stringify({ spuID: this.editSkuInfo.SpuId, num: this.editSkuInfo.GetGoodsNum })
+            setDefaultGetGoodsNum(data).then(res => {
+              if (res.success) {
+                this.$message.success('设置成功!')
+              }
+            })
+          })
+          .finally(() => {
+            this.emitSkuSave()
+          })
+      } else {
+        this.editSkuInfo.newNum = 0
+        this.emitSkuSave()
+      }
+    },
+    emitSkuSave() {
       const getGoodsInfo = qs.stringify(this.editSkuInfo)
       editGetGoodsInfo(getGoodsInfo).then(res => {
         if (res.success) {
@@ -323,8 +365,8 @@ export default {
               count++
             }
           }
-          if (this.infoArr.map((v) => { return v.gid }).indexOf(currentGid) === -1) {
-            this.infoArr.push({ gid: currentGid, am: count })
+          if (this.infoArr.map((v) => { return v.gid }).indexOf(Number(currentGid)) === -1) {
+            this.infoArr.push({ gid: Number(currentGid), am: count })
           }
         }
         console.log(this.infoArr)
@@ -335,7 +377,6 @@ export default {
               // 清空infoArr
               this.infoArr = []
               this.scanfSkuList = []
-
               this.$message.success('入库成功!')
             }
           })
@@ -354,6 +395,26 @@ export default {
       this.scanfSkuList = []
       this.goodsInfo = ''
       this.infoArr = []
+    },
+    enterOption(index) {
+      this.focusNum = index
+    },
+    leaveOption() {
+      this.focusNum = null
+    },
+    handleDefaultNum(val) {
+      this.$confirm('是否设置为默认拿货编码?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info'
+      }).then(() => {
+        const data = qs.stringify({ spuID: this.editSkuInfo.SpuId, num: val })
+        setDefaultGetGoodsNum(data).then(res => {
+          if (res.success) {
+            this.$message.success('设置成功!')
+          }
+        })
+      })
     }
   }
 }

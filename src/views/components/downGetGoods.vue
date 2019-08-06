@@ -53,15 +53,13 @@ export default {
           if (res.success) {
             const data = res.data.rows
             const temp_data = []
+            let mlCount = 0
             Object.assign(temp_data, data)
             for (let i = 0; i < data.length; i++) {
               if (Number(data[i].Amount) > 1) {
                 for (let j = 0; j < Number(data[i].Amount) - 1; j++) {
-                  console.log('position', i + j)
-                  console.log('i', i)
-                  console.log('j', j)
-                  console.log('data[i]', data[i])
-                  temp_data.splice(i + j, 0, data[i])
+                  mlCount++
+                  temp_data.splice(i + j + mlCount, 0, data[i])
                 }
               }
             }
