@@ -245,7 +245,7 @@ export default {
       }
     },
     toSectionDetails(row, column, event) {
-      if (event.target.innerHTML !== '编辑' && event.target.innerHTML !== '删除') {
+      if (event.target.innerHTML !== '编辑' && event.target.innerHTML !== '<!----><!----><span>编辑</span>' && event.target.innerHTML !== '删除' && event.target.innerHTML !== '<!----><!----><span>删除</span>') {
         this.$router.push({
           name: 'stockDetails',
           params: { id: row.Id }
