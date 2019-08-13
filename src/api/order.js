@@ -75,10 +75,10 @@ export function deleteOrderDetails(id) {
   })
 }
 
-// 删除订单
-export function getSkuInfoBySectionNum(SectionNum) {
+// 根据spuID获取spu
+export function getSpuInfoBySectionID(sectionID) {
   return request({
-    url: '/order/getSkuInfoBySectionNum?SectionNum=' + SectionNum,
+    url: '/order/getSpuInfoBySectionID?SectionID=' + sectionID,
     method: 'get'
   })
 }

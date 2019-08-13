@@ -196,11 +196,22 @@
     <!-- 添加明细 -->
     <el-dialog title="添加订单明细" :visible.sync="dialogAddOrderDetalisVisible">
       <el-form :model="newOrderDetailsInfo" label-position="right" label-width="100px">
+        <el-form-item>
+          <img style="width: 100px; height: 100px" :src="newOrderDetailsInfo.SpuPicURL !== '' ? newOrderDetailsInfo.SpuPicURL : 'https://xkerp-pic.oss-cn-shenzhen.aliyuncs.com/zhanwei.png'">
+        </el-form-item>
         <el-form-item label="款式编号">
-          <el-input v-model="newOrderDetailsInfo.SectionNum" autocomplete="off" />
+          <el-input v-model="newOrderDetailsInfo.SectionNum" autocomplete="off" @change="changeSectionID" />
         </el-form-item>
         <el-form-item label="SKU">
-          <el-input v-model="newOrderDetailsInfo.SkuName" autocomplete="off" />
+          <!-- <el-input v-model="newOrderDetailsInfo.SkuName" autocomplete="off" /> -->
+          <el-select v-model="newOrderDetailsInfo.SkuName">
+            <el-option
+              v-for="(item, index) in skuInfo"
+              :key="index"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="售价">
           <el-input v-model="newOrderDetailsInfo.SalePrice" autocomplete="off" />
@@ -210,7 +221,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogAddOrderDetalisVisible = false">取 消</el-button>
+        <el-button @click="dialogAddOrderDetalisVisible = false;skuInfo = {};newOrderDetailsInfoInit()">取 消</el-button>
         <el-button type="primary" @click="newOrderDetalisSubmit">确 定</el-button>
       </div>
     </el-dialog>
@@ -242,7 +253,7 @@
 </template>
 
 <script>
-import { orderList, toGetGoodsList, markWaiting, uploadOrder, deleteOrder, addErpOrder, addErpOrderDetails, deleteOrderDetails, getSkuInfoBySectionNum } from '@/api/order'
+import { orderList, toGetGoodsList, markWaiting, uploadOrder, deleteOrder, addErpOrder, addErpOrderDetails, deleteOrderDetails, getSpuInfoBySectionID } from '@/api/order'
 import qs from 'qs'
 
 export default {
@@ -271,7 +282,9 @@ export default {
         SkuName: '',
         SalePrice: '',
         Amount: '',
-        ErpStatus: 'pending'
+        ErpStatus: 'pending',
+        SpuPicURL: '',
+        SaleURL: ''
       },
       tableData: [],
       paginator: {
@@ -303,6 +316,20 @@ export default {
         .catch(err => {
           console.log(err)
         })
+    },
+    newOrderDetailsInfoInit() {
+      this.newOrderDetailsInfo = {
+        ErpOrder: {
+          Id: ''
+        },
+        SectionNum: '',
+        Color: '',
+        Size: '',
+        Amount: '',
+        ErpStatus: 'pending',
+        SpuPicURL: '',
+        SaleURL: ''
+      }
     },
     dealWithOrder() {
       this.tableLoading = true
@@ -390,20 +417,6 @@ export default {
     addOrderDetails(orderId) {
       this.dialogAddOrderDetalisVisible = true
       this.newOrderDetailsInfo.ErpOrder.Id = orderId
-      // if (this.newOrderDetailsInfo.ErpOrder.Id === '') {
-      //   this.newOrderDetailsInfo.ErpOrder.Id = data.row.Id
-      //   const details = {
-      //     ErpOrder: {
-      //       Id: data.row.Id
-      //     },
-      //     Amount: '',
-      //     Color: '',
-      //     Size: '',
-      //     DeliverRemark: '',
-      //     new: true
-      //   }
-      //   data.row.ErpOrderDetails.push(details)
-      // }
     },
     newOrderSubmit() {
       this.newOrderInfo.ErpStatus = 'pending'
@@ -419,22 +432,12 @@ export default {
       })
     },
     newOrderDetalisSubmit() {
-      // this.newOrderInfo.ErpStatus = 'pending'
       console.log(this.newOrderDetailsInfo)
       addErpOrderDetails(this.newOrderDetailsInfo).then(res => {
         if (res.success) {
-          this.newOrderDetailsInfo = {
-            ErpOrder: {
-              Id: ''
-            },
-            SectionNum: '',
-            Color: '',
-            Size: '',
-            Amount: '',
-            ErpStatus: 'pending'
-          }
           this.dialogAddOrderDetalisVisible = false
           this.$message.success('添加订单详情成功！')
+          this.newOrderDetailsInfoInit()
           this.getList()
         }
       }).catch(e => {
@@ -453,26 +456,17 @@ export default {
         })
       })
     },
-    changeSectionNum(sNum) {
-      getSkuInfoBySectionNum(sNum).then(res => {
+    // 根据填入的款式ID获取spu详情
+    changeSectionID(sID) {
+      getSpuInfoBySectionID(sID).then(res => {
         if (res.success) {
           const data = res.data.rows
-          const temp_skuInfo = {}
-          for (let i = 0; i < data.length; i++) {
-            temp_skuInfo[data[i].Color] = []
-            // const item = {}
-            // item.color = data[i].Color
-            // item.size = []
-            for (let j = 0; j < data.length; j++) {
-              if (data[j].Color === data[i].Color) {
-                temp_skuInfo[data[i].Color].push(data[j].Size)
-                // item.size.push(data[j].Size)
-              }
-            }
-          }
-          this.skuInfo = temp_skuInfo
+          console.log('data', data)
+          this.skuInfo = Array.from(data.ErpSkus, item => item.SkuName)
+          this.newOrderDetailsInfo.SpuPicURL = data.Img
+          this.newOrderDetailsInfo.SaleURL = data.OriginURL
         }
-        console.log(this.skuInfo)
+        console.log('newOrderDetailsInfo', this.newOrderDetailsInfo)
       }).catch(e => {
         console.log(e)
       })
