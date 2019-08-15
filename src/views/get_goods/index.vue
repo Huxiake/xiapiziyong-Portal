@@ -375,8 +375,12 @@ export default {
           .then(res => {
             if (res.success) {
               // 清空infoArr
-              this.infoArr = []
-              this.scanfSkuList = []
+              const unEnterArr = res.data.unEnterArr
+              console.log(unEnterArr)
+              console.log('scanf', this.scanfSkuList)
+              this.scanfSkuList = this.scanfSkuList.filter(item => { const i = unEnterArr.indexOf(Number(item.gid)); if (i !== -1) { unEnterArr.splice(i, 1); return item } })
+              // this.infoArr = []
+              // this.scanfSkuList = []
               this.$message.success('入库成功!')
             }
           })
