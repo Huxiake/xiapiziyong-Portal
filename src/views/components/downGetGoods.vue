@@ -3,7 +3,7 @@
     <div id="pdfDom" v-loading.fullscreen="loading" element-loading-text="标签生成中" style="margin: 0 auto;background-color:#ffffff;" :style="{width: pdfWidth, height: pdfHeght}">
       <div v-for="(item, i) in pagedata" :key="i" style="float:left;height:328.8px;" :style="{width: Math.ceil(i%2) === 0 ? '600.93px' : '566.92px'}">
         <div class="tabLeft">
-          <div style="width:272px;height:105px;font-size:34px;font-weight:bold;margin-left:12px;">{{ item.GetGoodsNum.replace(/金富|大西|大时|三|跨客|女人|非|宝|柏|新潮|泓|景|国/g, '').replace('新金', 'J').replace('佰', 'B') }}</div>
+          <div style="width:267px;height:105px;font-size:34px;font-weight:bold;margin-left:20px;">{{ item.GetGoodsNum.replace(/金富|大西|大时|三|跨客|女人|非|宝|柏|新潮|泓|景|国/g, '').replace('新金', 'J').replace('佰', 'B') }}</div>
           <div style="display:table-cell;width:40%;height:90px;font-size:32px;text-align:center;vertical-align:middle">{{ item.ErpSku.SkuName }}</div>
           <div style="width:100%;height:20%;font-size:30px;font-weight:bold;margin-top:8px;">{{ item.ErpSku.ErpSpu.Price }}&nbsp;{{ item.Remark }}</div>
         </div>
@@ -91,7 +91,7 @@ export default {
 
 <style lang="scss" scoped>
   .tabLeft {
-    width: 272px;
+    width: 267px;
     height: 263px;
     margin:5px;
     float:left;
