@@ -56,8 +56,9 @@ export default {
             let mlCount = 0
             Object.assign(temp_data, data)
             for (let i = 0; i < data.length; i++) {
-              if (Number(data[i].Amount) > 1) {
-                for (let j = 0; j < Number(data[i].Amount) - 1; j++) {
+              const getAmount = Number(data[i].Amount) - Number(data[i].PutInAmount)
+              if (getAmount > 1) {
+                for (let j = 0; j < getAmount - 1; j++) {
                   mlCount++
                   temp_data.splice(i + j + mlCount, 0, data[i])
                 }

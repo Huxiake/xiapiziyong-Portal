@@ -216,7 +216,6 @@ export default {
             this.tableData = res.data.rows
             this.paginatorInfo = res.data.paginator
             this.tableLoading = false
-            console.log('tabledata', this.tableData)
           }
         })
         .catch(err => {
@@ -378,7 +377,7 @@ export default {
               const unEnterArr = res.data.unEnterArr
               console.log(unEnterArr)
               console.log('scanf', this.scanfSkuList)
-              this.scanfSkuList = this.scanfSkuList.filter(item => { const i = unEnterArr.indexOf(Number(item.gid)); if (i !== -1) { unEnterArr.splice(i, 1); return item } })
+              this.scanfSkuList = this.scanfSkuList.filter(item => { const i = unEnterArr.indexOf(Number(item.gid)); if (i !== -1) { unEnterArr.splice(i, 1); console.log(item); return item } })
               // this.infoArr = []
               // this.scanfSkuList = []
               this.$message.success('入库成功!')
