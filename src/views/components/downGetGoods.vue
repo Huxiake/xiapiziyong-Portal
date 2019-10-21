@@ -62,6 +62,8 @@ export default {
                   mlCount++
                   temp_data.splice(i + j + mlCount, 0, data[i])
                 }
+              } else {
+                console.log(data[i].OrderNum, data[i].getGoods_num, '打印数量为0')
               }
             }
             this.pagedata = temp_data

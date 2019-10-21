@@ -9,45 +9,36 @@
           <el-col :span="3" :offset="20">
             <el-input
               v-model="paginator.SectionNum"
-              size="medium"
+              size="small"
               placeholder="请输入款号"
             />
           </el-col>
           <el-col :span="1.5">
-            <el-button type="primary" size="medium" @click="getList">查询</el-button>
+            <el-button type="primary" size="small" @click="getList">查询</el-button>
           </el-col>
         </el-row>
         <el-row style="margin-top:20px;margin-bottom:20px" type="flex" justify="space-around">
           <el-col :span="22">
-            <el-button type="primary" size="medium" @click="handleScaningEnter">入库</el-button>
-            <el-button type="warning" size="medium" @click="handleScaningOut">出库</el-button>
-            <!-- <el-button type="primary" size="medium" @click="toPrint">打印标签</el-button> -->
+            <el-button type="primary" size="small" @click="handleScaningEnter">入库</el-button>
+            <el-button type="warning" size="small" @click="handleScaningOut">出库</el-button>
+            <!-- <el-button type="primary" size="small" @click="toPrint">打印标签</el-button> -->
           </el-col>
-          <el-col :span="2">
-            <el-button size="medium" type="primary" style="font-size:12px;" @click="handleSpuAdd">新增</el-button>
+          <el-col :span="3">
+            <el-button size="small" type="primary" @click="handleSpuAdd">新增</el-button>
             <el-upload
-              class="upload-demo"
               action=""
               style="float:right"
               :show-file-list="false"
               :before-upload="beforeXlsUpload"
               :http-request="uploadXlsFile"
             >
-              <el-button size="medium" type="warning" style="font-size:12px;">上传</el-button>
+              <el-button size="small" type="warning">上传</el-button>
             </el-upload>
+            <el-button size="small" type="warning" @click="syncSpuID">同步商品</el-button>
           </el-col>
         </el-row>
       </div>
       <div class="box-table">
-        <!-- <el-pagination
-          :current-page="paginatorInfo.currentPage + 1"
-          :page-size="paginator.limit"
-          :total="paginatorInfo.totalCount"
-          layout="prev, pager, next"
-          style="margin-bottom:10px;float:right"
-          @current-change="handleCurrentChange"
-          @size-change="handleSizeChange"
-        /> -->
         <!-- spu列表 -->
         <el-table
           v-loading="loading"
@@ -176,7 +167,15 @@
 </template>
 
 <script>
-import { stockList, uploadSpuXls, uploadSpuPic, updateErpSpu, deleteErpSpu, addErpSpu } from '@/api/stock'
+import {
+  stockList,
+  uploadSpuXls,
+  uploadSpuPic,
+  updateErpSpu,
+  deleteErpSpu,
+  addErpSpu,
+  syncSpuID
+} from '@/api/stock'
 import qs from 'qs'
 
 export default {
@@ -375,6 +374,17 @@ export default {
           this.$message.error('新增款式失败，请稍后重试')
         }
       })
+    },
+    syncSpuID() {
+      syncSpuID()
+        .then(res => {
+          if (res.success) {
+            this.$message.success('同步成功')
+          }
+        })
+        .catch(e => {
+          console.log(e)
+        })
     },
     // 分页下一页
     handleCurrentChange(val) {

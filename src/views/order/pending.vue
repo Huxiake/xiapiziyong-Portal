@@ -48,7 +48,7 @@
           :default-expand-all="true"
           @selection-change="handleSelectionChange"
         >
-          <el-table-column type="selection" width="40" />
+          <el-table-column type="selection" width="45" />
           <el-table-column type="expand" width="20">
             <template slot-scope="scope">
               <el-table
@@ -61,7 +61,7 @@
                 @cell-mouse-leave="leaveOrderDetailsOption"
               >
                 <!-- 商品信息框 -->
-                <el-table-column width="265">
+                <el-table-column width="305">
                   <template slot-scope="subScope">
                     <div class="goodsInfo-left">
                       <el-popover
@@ -117,7 +117,13 @@
               </el-table>
             </template>
           </el-table-column>
-          <el-table-column label="商品信息" prop="OrderNum" width="205" />
+          <el-table-column label="商品信息" width="245">
+            <template slot-scope="scope">
+              <span :style="{ color: calcIsOverTime(scope.row.OrderCreateTime) ? '#CE0000' : '' }">{{ scope.row.OrderNum }}</span>
+              <el-tag v-if="calcIsOverTime(scope.row.OrderCreateTime) === 3" size="mini" style="background-color:#CE0000;color:#FFFFFF;margin-left: 5px">急</el-tag>
+              <el-tag v-else-if="calcIsOverTime(scope.row.OrderCreateTime) === 2" size="mini" style="background-color:#fac900;color:#FFFFFF;margin-left: 5px">紧</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column label="时间" align="center">
             <template slot-scope="scope">
               {{ $moment(scope.row.OrderCreateTime).format('YYYY-MM-DD hh:mm:ss') }}
@@ -497,6 +503,16 @@ export default {
     },
     nextPage() {
       this.paginator.offset = this.paginator.offset + this.paginator.limit
+    },
+    // 计算是否超时
+    calcIsOverTime(orderTime) {
+      // orderTime - now
+      if (this.$moment(this.$moment(orderTime).add(3, 'days').format('YYYY-MM-DD')).isBefore(this.$moment())) {
+        return 3
+      } else if (this.$moment(this.$moment(orderTime).add(2, 'days').format('YYYY-MM-DD')).isBefore(this.$moment())) {
+        return 2
+      }
+      return false
     }
   }
 }

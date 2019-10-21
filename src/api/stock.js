@@ -109,3 +109,11 @@ export function scaningOut(id) {
     method: 'post'
   })
 }
+
+// 同步spuID
+export function syncSpuID(id) {
+  return request({
+    url: '/stock/syncSpuID',
+    method: 'post'
+  })
+}
