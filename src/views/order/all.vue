@@ -11,7 +11,7 @@
               v-model="pickerDate"
               value-format="yyyy-MM-dd 00:00:00"
               type="daterange"
-              size="medium"
+              size="mini"
               range-separator="-"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
@@ -21,12 +21,12 @@
           <el-col :span="4">
             <el-input
               v-model="paginator.OrderNum"
-              size="medium"
+              size="mini"
               placeholder="请输入订单号"
             />
           </el-col>
           <el-col :span="1.5">
-            <el-button type="primary" size="medium" @click="getList">查询</el-button>
+            <el-button type="primary" size="mini" @click="getList">查询</el-button>
           </el-col>
         </el-row>
       </div>

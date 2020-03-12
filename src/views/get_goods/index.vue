@@ -7,11 +7,11 @@
       <div class="box-tools">
         <el-row :gutter="8" type="flex" justify="right">
           <el-col :span="17">
-            <el-button type="primary" @click="toPrint">打印</el-button>
-            <el-button type="warning" @click="handleScanf">扫描入库</el-button>
+            <el-button type="primary" size="mini" @click="toPrint">打印</el-button>
+            <el-button type="warning" size="mini" @click="handleScanf">扫描入库</el-button>
           </el-col>
           <el-col :span="2">
-            <el-select v-model="paginator.GoodsStatus" placeholder="拿货状态">
+            <el-select v-model="paginator.GoodsStatus" placeholder="拿货状态" size="mini">
               <el-option label="全部" value="" />
               <el-option label="待拿货" value="Pending" />
               <el-option label="已拿货" value="Get" />
@@ -22,10 +22,11 @@
             <el-input
               v-model="paginator.OrderNum"
               placeholder="输入订单号可查询"
+              size="mini"
             />
           </el-col>
           <el-col :span="1.5">
-            <el-button type="primary" @click="getList">查询</el-button>
+            <el-button type="primary" size="mini" @click="getList">查询</el-button>
           </el-col>
         </el-row>
       </div>
@@ -38,7 +39,7 @@
           stripe
           @selection-change="handleSelectionChange"
         >
-          <el-table-column type="selection" width="40" />
+          <el-table-column type="selection" width="55" />
           <el-table-column label="缩略图" align="center" width="80">
             <template slot-scope="scope">
               <el-popover
@@ -68,8 +69,6 @@
           </el-table-column>
           <el-table-column label="拿货编号" align="center">
             <template slot-scope="scope">
-              <!-- <el-input v-if="scope.row.Id === editSkuInfo.Id" v-model="editSkuInfo.GetGoodsNum" style="width:180px" /> -->
-              <!-- <span v-else>{{ scope.row.GetGoodsNum }}</span> -->
               <el-select v-if="scope.row.Id === editSkuInfo.Id" v-model="editSkuInfo.GetGoodsNum" filterable allow-create default-first-option style="width:180px" placeholder="请选择">
                 <el-option
                   v-for="(item, index) in getGoodsNumList"
@@ -131,7 +130,7 @@
         </el-table>
         <el-pagination
           :current-page="paginatorInfo.currentPage"
-          :page-sizes="[10, 50, 100, 200, 300, 400, 500]"
+          :page-sizes="[10, 50, 100, 200, 500, 1000, 2000]"
           :page-size="paginator.limit"
           :total="paginatorInfo.totalCount"
           layout="total, sizes, prev, pager, next, jumper"
@@ -368,18 +367,14 @@ export default {
             this.infoArr.push({ gid: Number(currentGid), am: count })
           }
         }
-        console.log(this.infoArr)
         this.scanfLoading = true
         scanfMarkGet({ data: this.infoArr })
           .then(res => {
             if (res.success) {
               // 清空infoArr
-              const unEnterArr = res.data.unEnterArr
-              console.log(unEnterArr)
-              console.log('scanf', this.scanfSkuList)
-              this.scanfSkuList = this.scanfSkuList.filter(item => { const i = unEnterArr.indexOf(Number(item.gid)); if (i !== -1) { unEnterArr.splice(i, 1); console.log(item); return item } })
-              // this.infoArr = []
-              // this.scanfSkuList = []
+              // const unEnterArr = res.data.unEnterArr
+              this.scanfSkuList = []
+              // this.scanfSkuList = this.scanfSkuList.filter(item => { const i = unEnterArr.indexOf(Number(item.gid)); if (i !== -1) { unEnterArr.splice(i, 1); console.log(item); return item } })
               this.$message.success('入库成功!')
             }
           })

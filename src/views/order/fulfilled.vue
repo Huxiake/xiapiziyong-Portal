@@ -9,17 +9,17 @@
           <el-col :span="3" :offset="20">
             <el-input
               v-model="paginator.OrderNum"
-              size="medium"
+              size="mini"
               placeholder="请输入款号"
             />
           </el-col>
           <el-col :span="1.5">
-            <el-button type="primary" size="medium" @click="getList">查询</el-button>
+            <el-button type="primary" size="mini" @click="getList">查询</el-button>
           </el-col>
         </el-row>
         <el-row style="margin-top:20px;margin-bottom:20px">
           <el-col :span="22">
-            <el-button type="primary" size="medium" @click="dealWithOrder">完成拣货</el-button>
+            <el-button type="primary" size="mini" @click="dealWithOrder">完成拣货</el-button>
           </el-col>
         </el-row>
       </div>

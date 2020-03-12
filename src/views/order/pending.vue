@@ -6,25 +6,24 @@
       </div>
       <div class="box-tools">
         <el-row :gutter="4" type="flex" justify="end">
-          <!-- <el-col :span="4" :offset="20"> -->
           <el-col :span="4">
             <el-input
               v-model="paginator.OrderNum"
-              size="medium"
+              size="mini"
               placeholder="输入订单号查询"
             />
           </el-col>
           <el-col :span="1.5">
-            <el-button type="primary" size="medium" @click="getList">查询</el-button>
+            <el-button type="primary" size="mini" @click="getList">查询</el-button>
           </el-col>
         </el-row>
-        <el-row :gutter="4" style="margin-top:20px;margin-bottom:20px" type="flex" justify="space-between">
+        <el-row :gutter="16" style="margin-top:15px;margin-bottom:15px" type="flex" justify="space-between">
           <el-col :span="4">
-            <el-button type="primary" size="medium" @click="dealWithOrder">配货</el-button>
-            <el-button type="warning" size="medium" @click="scanEnter">扫描入库</el-button>
+            <el-button type="primary" size="mini" @click="dealWithOrder">配货</el-button>
+            <el-button type="warning" size="mini" @click="calcProfit">计算利润</el-button>
           </el-col>
           <el-col :span="2">
-            <el-button size="medium" type="primary" style="font-size:12px;" @click="addOrder">新增</el-button>
+            <el-button size="mini" type="primary" style="font-size:12px;" @click="addOrder">新增</el-button>
             <el-upload
               class="upload-demo"
               action=""
@@ -33,7 +32,7 @@
               :before-upload="beforeXlsUpload"
               :http-request="uploadXlsFile"
             >
-              <el-button size="medium" type="warning" style="font-size:12px;">导入</el-button>
+              <el-button size="mini" type="warning" style="font-size:12px;">导入</el-button>
             </el-upload>
           </el-col>
         </el-row>
@@ -89,12 +88,7 @@
                   </template>
                 </el-table-column>
                 <!-- 中间的 -->
-                <el-table-column align="center">
-                  <!-- <template slot-scope="subScope">
-                    <el-input v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" v-model="newOrderDetailsInfo.Amount" />
-                    <span v-else>{{ subScope.row.Amount }}</span>
-                  </template> -->
-                </el-table-column>
+                <el-table-column align="center" />
                 <!-- 状态框 -->
                 <el-table-column prop="ErpStatus" align="center" width="100">
                   <template slot-scope="subScope">
@@ -108,7 +102,6 @@
                 <!-- 操作框 -->
                 <el-table-column align="center" width="180">
                   <template slot-scope="subScope">
-                    <!-- <el-button v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" type="primary" size="small" @click="newOrderDetalisSubmit">保存</el-button> -->
                     <a v-show="deleteOrderDetailsBtnId === subScope.row.Id" type="primary" size="small" @click="handleDeleteOrderDetails(subScope.row.Id)">
                       删除
                     </a>
@@ -141,6 +134,7 @@
           </el-table-column>
           <el-table-column :formatter="tableFormatter" label="买家留言" prop="BuyerRemake" align="center" />
           <el-table-column :formatter="tableFormatter" label="备注" prop="Remark" align="center" />
+          <el-table-column :formatter="tableFormatter" label="订单利润" prop="Profit" align="center" />
           <el-table-column :formatter="tableFormatter" label="店铺" prop="ShopName" align="center" />
           <el-table-column label="仓库状态" prop="ErpStatus" align="center" width="100">
             <template slot-scope="scope">
@@ -151,7 +145,6 @@
           </el-table-column>
           <el-table-column label="操作" align="center" width="180">
             <template slot-scope="scope">
-              <!-- <el-button type="danger" size="mini" icon="el-icon-delete" circle @click="handleDeleteOrder(scope.row.Id)">删除</el-buton> -->
               <el-button type="danger" size="mini" @click="handleDeleteOrder(scope.row.Id)">
                 删除
               </el-button>
@@ -209,7 +202,6 @@
           <el-input v-model="newOrderDetailsInfo.SectionNum" autocomplete="off" @change="changeSectionID" />
         </el-form-item>
         <el-form-item label="SKU">
-          <!-- <el-input v-model="newOrderDetailsInfo.SkuName" autocomplete="off" /> -->
           <el-select v-model="newOrderDetailsInfo.SkuName">
             <el-option
               v-for="(item, index) in skuInfo"
@@ -259,7 +251,18 @@
 </template>
 
 <script>
-import { orderList, toGetGoodsList, markWaiting, uploadOrder, deleteOrder, addErpOrder, addErpOrderDetails, deleteOrderDetails, getSpuInfoBySectionID } from '@/api/order'
+import {
+  orderList,
+  toGetGoodsList,
+  markWaiting,
+  uploadOrder,
+  deleteOrder,
+  addErpOrder,
+  addErpOrderDetails,
+  deleteOrderDetails,
+  getSpuInfoBySectionID,
+  calcProfitByOrderIDList
+} from '@/api/order'
 import qs from 'qs'
 
 export default {
@@ -513,6 +516,21 @@ export default {
         return 2
       }
       return false
+    },
+    calcProfit() {
+      this.tableLoading = true
+      const orderList = 'OrderList=[' + this.selectList.join(',') + ']'
+      calcProfitByOrderIDList(orderList)
+        .then(res => {
+          this.$message.success('计算成功！')
+          this.getList()
+        })
+        .catch(err => {
+          console.log(err)
+        })
+        .finally(() => {
+          this.tableLoading = false
+        })
     }
   }
 }

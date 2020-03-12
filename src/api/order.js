@@ -82,3 +82,10 @@ export function getSpuInfoBySectionID(sectionID) {
     method: 'get'
   })
 }
+
+export function calcProfitByOrderIDList(params) {
+  return request({
+    url: '/order/calcOrderProfit?' + params,
+    method: 'post'
+  })
+}

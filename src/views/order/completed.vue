@@ -9,12 +9,12 @@
           <el-col :span="3" :offset="20">
             <el-input
               v-model="paginator.OrderNum"
-              size="medium"
+              size="mini"
               placeholder="请输入款号"
             />
           </el-col>
           <el-col :span="1.5">
-            <el-button type="primary" size="medium" @click="getList">查询</el-button>
+            <el-button type="primary" size="mini" @click="getList">查询</el-button>
           </el-col>
         </el-row>
       </div>
@@ -67,27 +67,22 @@
                   </template>
                 </el-table-column>
                 <!-- 中间的 -->
-                <el-table-column align="center">
-                  <!-- <template slot-scope="subScope">
-                    <el-input v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" v-model="newOrderDetailsInfo.Amount" />
-                    <span v-else>{{ subScope.row.Amount }}</span>
-                  </template> -->
-                </el-table-column>
+                <el-table-column align="center" />
                 <!-- 状态框 -->
                 <el-table-column prop="ErpStatus" align="center" width="100">
                   <template slot-scope="subScope">
-                    <el-tag v-if="subScope.row.ErpStatus === 'pending'" type="info" size="small">未处理</el-tag>
-                    <el-tag v-if="subScope.row.ErpStatus === 'fulfilled'" type="success" size="small">现货</el-tag>
-                    <el-tag v-if="subScope.row.ErpStatus === 'get'" size="small">已拿货</el-tag>
-                    <el-tag v-if="subScope.row.ErpStatus === 'forPickup'" type="warning" size="small">待拿货</el-tag>
-                    <el-tag v-if="subScope.row.ErpStatus === 'lack'" type="danger" size="small">待处理缺货</el-tag>
+                    <el-tag v-if="subScope.row.ErpStatus === 'pending'" type="info" size="mini">未处理</el-tag>
+                    <el-tag v-if="subScope.row.ErpStatus === 'fulfilled'" type="success" size="mini">现货</el-tag>
+                    <el-tag v-if="subScope.row.ErpStatus === 'get'" size="mini">已拿货</el-tag>
+                    <el-tag v-if="subScope.row.ErpStatus === 'forPickup'" type="warning" size="mini">待拿货</el-tag>
+                    <el-tag v-if="subScope.row.ErpStatus === 'lack'" type="danger" size="mini">待处理缺货</el-tag>
                   </template>
                 </el-table-column>
                 <!-- 操作框 -->
                 <el-table-column align="center" width="80">
                   <!-- <template slot-scope="subScope"> -->
-                  <!-- <el-button v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" type="primary" size="small" @click="newOrderDetalisSubmit">保存</el-button> -->
-                  <!-- <el-button v-else size="small" @click="handleDeleteOrderDetails(subScope.row.Id)">删除</el-button> -->
+                  <!-- <el-button v-if="subScope.row.ErpOrder.Id = newOrderDetailsInfo.ErpOrder.Id && subScope.row.new" type="primary" size="mini" @click="newOrderDetalisSubmit">保存</el-button> -->
+                  <!-- <el-button v-else size="mini" @click="handleDeleteOrderDetails(subScope.row.Id)">删除</el-button> -->
                   <!-- </template> -->
                 </el-table-column>
               </el-table>
@@ -110,7 +105,7 @@
           <el-table-column :formatter="tableFormatter" label="店铺" prop="ShopName" align="center" />
           <el-table-column label="仓库状态" prop="ErpStatus" align="center" width="100">
             <template slot-scope="scope">
-              <el-tag v-if="scope.row.ErpStatus === 'completed'" type="success" size="small">已完成</el-tag>
+              <el-tag v-if="scope.row.ErpStatus === 'completed'" type="success" size="mini">已完成</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" width="80">
